@@ -1,3 +1,9 @@
 # You can specialize this file for each language.
 # For example, for French create a messages.fr file
 #
+
+secure.username=Username
+secure.password=Password
+secure.signin=Log in
+secure.welcome=Welcome to our nameLess App
+secure.instruction=Please login below

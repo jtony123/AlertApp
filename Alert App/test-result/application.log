@@ -1,0 +1,10 @@
+10 Aug 2016 12:32:31,330 INFO  ~ Starting /Users/anthonyjackson/git/alertApp1/Alert App
+10 Aug 2016 12:32:31,884 WARN  ~ You're running Play! in DEV mode
+10 Aug 2016 12:32:31,959 INFO  ~ Listening for HTTP on port 9000 (Waiting a first request to start) ...
+10 Aug 2016 12:32:37,216 WARN  ~ Ignoring  (static params must be specified as key:'value',...)
+10 Aug 2016 12:32:38,617 INFO  ~ Connected to jdbc:h2:mem:play;MODE=MYSQL;LOCK_MODE=0
+10 Aug 2016 12:32:39,320 INFO  ~ Application 'Alert App' is now started !
+10 Aug 2016 12:34:04,837 WARN  ~ Ignoring  (static params must be specified as key:'value',...)
+10 Aug 2016 12:35:02,410 WARN  ~ Ignoring  (static params must be specified as key:'value',...)
+10 Aug 2016 12:36:57,181 WARN  ~ Ignoring  (static params must be specified as key:'value',...)
+10 Aug 2016 12:42:04,466 WARN  ~ Ignoring  (static params must be specified as key:'value',...)

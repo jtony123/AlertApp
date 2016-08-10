@@ -1,4 +1,50 @@
 #{extends 'main.html' /}
-#{set title:'Home' /}
+#{set title:'Login' /}
 
-#{welcome /}
+
+<script src="@{'public/javascripts/jquery.js'}"></script>
+<script src="@{'public/javascripts/bootstrap.js'}"></script>
+
+<div id="login-container">
+	<div id="login-form">
+		<img src="@{'public/images/orreco-logo.png'}" alt="Orreco" />
+		<h1 class="loginTitle">&{'secure.welcome'}</h1>
+		<p class="loginSubtitle">&{'secure.instruction'}</p>
+		#{form @authenticate(), autocomplete: 'off'}
+			#{if flash.loginError}
+				<div class="alert alert-danger" role="alert">&{flash.loginError} <a href="@{Security.requestPasswordReset()}" class="error-link">Reset your password.</a></div>
+			#{/if}
+			#{elseif flash.locked}
+				<div class="alert alert-danger" role="alert">&{flash.locked}</div>
+			#{/elseif}
+			#{elseif flash.error}
+				<div class="alert alert-danger" role="alert">&{flash.error}</div>
+			#{/elseif}
+			#{elseif flash.success}
+				<div class="alert alert-success" role="alert">&{flash.success}</div>
+			#{/elseif}
+			<div class="form-group input-group">
+				<label for="username">&{'secure.username'}</label>
+				<input type="text" class="form-control" name="username" id="username" value="${flash.username}" autocapitalize="none">
+			</div>
+			<div class="form-group input-group">
+				<label for="username">&{'secure.password'}</label>
+				<input type="password" class="form-control" name="password" id="password" value="" autocapitalize="none">
+			</div>
+			<div class="form-controls">
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary submit">&{'secure.signin'}</button>					
+				</div>
+			</div>
+		#{/form}
+	</div>
+	<div class="footer login-footer">
+		<div class="footer-top">
+			<a href="#"> nameLess App v${play.Play.configuration.getProperty("app.version", "1.2")}</a>
+		</div>
+		<div class="footer-bottom">
+			<a href="http://www.orreco.com/" target="_blank">&copy; ${org.joda.time.DateTime.now().year().getAsText()} ORRECO</a>
+		</div>
+	</div>
+</div>
+<div id="login-bg"></div>
