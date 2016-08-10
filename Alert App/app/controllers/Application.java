@@ -24,5 +24,10 @@ public class Application extends Controller {
     	//render("Application/show.html", player);
     }
     
+    public static void show(Long id) {
+        Player post = Player.findById(id);
+        render(post);
+    }
+    
 
 }
