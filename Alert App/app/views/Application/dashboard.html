@@ -1,41 +1,96 @@
-#{extends 'main.html' /}
-#{set title:'Dashboard' /}
+#{extends 'main.html' /} #{set title:'Dashboard' /}
 
 <script src="@{'public/javascripts/jquery.js'}"></script>
 <script src="@{'public/javascripts/bootstrap.js'}"></script>
+<style>
+body {
+	background-color: gray;
+}
+</style>
 
-#{if frontPlayer}
-    
-    #{playerdisplay1 player:frontPlayer, as:'full' /}
-    
-    #{if otherPlayers.size()}
-    
-        <div class="older-posts">
-            <h3>Other players <span class="from">under this coach</span></h3>
-        
-            #{list items:otherPlayers, as:'otherPlayer'}
-                #{playerdisplay1 player:otherPlayer, as:'summary' /}
-            #{/list}
-        </div>
-        
-    #{/if}
-    
-#{/if}
- 
-#{else}
-    <div class="empty">
-        There is currently nothing to show here.
-    </div>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#"> <span> <img
+					src="@{'public/images/orreco-logo.png'}" alt="Orreco" /> 
+					nameLess App
+			</span>
+			</a>
+		</div>
+		<ul class="nav navbar-nav">
+			<li><a href="@{Application.showAll()}">Overview</a></li>
+			<li><a href="#">something else</a></li>
+			<li><a href="#">and something else</a></li>
+		</ul>
+	</div>
+</nav>
+
+#{if players.size()}
+
+<div class="container-fluid">
+	<br> <br>
+	<h3>Players under this coach</h3>
+
+	<div class="row">
+		#{list items:players, as:'player'}
+		<div class="col-xs-12 col-sm-6 col-md-3 col-lg-2"
+			style="background-color: lightgray; margin: 5px;">
+
+			<h2>
+				<a href="@{Application.show(player.id)}">
+					<div>
+					#{if player.playerPhoto}
+					
+					<img src="@{'public/images/player_photos/player14.jpeg'}" alt=${player.playername} height="180" width="180" />
+						
+					#{/if}
+					#{else}
+						<img src="@{'public/images/player-headshot.png'}" alt="no photo yet"
+							height="180" width="180" />
+					#{/else}		
+							${player.playername}
+					</div>
+				</a>
+			</h2>
+			<span>Player# ${player.playernumber}</span>, <span> since
+				${player.dateadded.format('dd MMM yy')}</span>
+			<div>
+				<h3>${player.gpsdata.size() ?: 'no'}
+					datapoint${player.gpsdata.size().pluralize()} :</h3>
+
+				#{list items:player.gpsdata, as:'gps'}
+				<div>
+					<div>
+						<span>${gps.dataDate.format('dd MMM')}</span>
+					</div>
+					<div>
+						<div>Detail:</div>
+						${gps.tT_Time}
+					</div>
+				</div>
+				#{/list}
+
+			</div>
+
+		</div>
+		#{/list}
+	</div>
+</div>
+
+#{/if} #{else}
+<div class="empty">There is currently nothing to show here.</div>
 #{/else}
 
 <div class="footer login-footer">
-		<div class="footer-top">
-			<a href="#"> nameLess App v${play.Play.configuration.getProperty("app.version", "1.2")}</a>
-		</div>
-		<div class="footer-bottom">
-			<a href="http://www.orreco.com/" target="_blank">&copy; ${org.joda.time.DateTime.now().year().getAsText()} ORRECO</a>
-		</div>
+	<div class="footer-top">
+		<a href="#"> nameLess App
+			v${play.Play.configuration.getProperty("app.version", "1.2")}</a>
 	</div>
+	<div class="footer-bottom">
+		<a href="http://www.orreco.com/" target="_blank">&copy;
+			${org.joda.time.DateTime.now().year().getAsText()} ORRECO</a>
+	</div>
+</div>
 </div>
 
 

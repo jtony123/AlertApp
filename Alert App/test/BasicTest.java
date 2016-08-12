@@ -46,7 +46,7 @@ public class BasicTest extends UnitTest {
 	    Client bob = new Client("bob@orreco.com", "secret", "Bob").save();
 	    
 	    // Create a new player
-	    new Player("Alice", 1, bob).save();
+	    new Player("Alice", 1, null, bob).save();
 	    
 	    // Test that the player has been created
 	    assertEquals(1, Player.count());
@@ -73,7 +73,7 @@ public class BasicTest extends UnitTest {
 		Client bob = new Client("bob@orreco.com", "secret", "Bob").save();
 	 
 	    // Create a new player
-	    Player player = new Player("Alice", 1, bob).save();
+	    Player player = new Player("Alice", 1, null, bob).save();
 	 
 	    // create player gps data
 	    new GPSData(player, 10, new Date(), 100).save();
@@ -107,7 +107,7 @@ public class BasicTest extends UnitTest {
 	    Client bob = new Client("bob@orreco.com", "secret", "Bob").save();
 	 
 	    // Create a new player
-	    Player player = new Player("Alice", 10, bob).save();
+	    Player player = new Player("Alice", 10, null, bob).save();
 	 
 	    // add some gps data
 	    player.addGPSData(new Date(), 101);
@@ -179,41 +179,41 @@ public class BasicTest extends UnitTest {
 	
 	
 	
-	/*
+	
 	
 	@Test
 	public void testTags() {
-	    // Create a new user and save it
+	    // Create a new client and save it
 	    Client bob = new Client("bob@orreco.com", "fred", "Bob").save();
 	 
 	    // Create a new player
-	    Player player1 = new Player("Alice", 10, bob).save();
-	    Player player2 = new Player("Alice", 10, bob).save();
+	    Player player1 = new Player("Alice", 10, null, bob).save();
+	    Player player2 = new Player("Alice", 10, null, bob).save();
 	 
 	    // Well
-	    assertEquals(0, Player.findTaggedWith("Red").size());
+	    assertEquals(0, Player.findCategorisededWith("Red").size());
 	 
-	    // Tag it now
-	    player1.tagItWith("Red").tagItWith("Blue").save();
-	    player2.tagItWith("Red").tagItWith("Green").save();
+	    // Categorise it now
+	    player1.categoriseItWith("Red").categoriseItWith("Blue").save();
+	    player2.categoriseItWith("Red").categoriseItWith("Green").save();
 	 
 	    // Check
-	    assertEquals(2, Player.findTaggedWith("Red").size());
-	    assertEquals(1, Player.findTaggedWith("Blue").size());
-	    assertEquals(1, Player.findTaggedWith("Green").size());
+	    assertEquals(2, Player.findCategorisedWith("Red").size());
+	    assertEquals(1, Player.findCategorisedWith("Blue").size());
+	    assertEquals(1, Player.findCategorisedWith("Green").size());
 	    
-	    assertEquals(1, Player.findTaggedWith("Red", "Blue").size());
-	    assertEquals(1, Player.findTaggedWith("Red", "Green").size());
-	    assertEquals(0, Player.findTaggedWith("Red", "Green", "Blue").size());
-	    assertEquals(0, Player.findTaggedWith("Green", "Blue").size());
+	    assertEquals(1, Player.findCategorisededWith("Red", "Blue").size());
+	    assertEquals(1, Player.findCategorisededWith("Red", "Green").size());
+	    assertEquals(0, Player.findCategorisededWith("Red", "Green", "Blue").size());
+	    assertEquals(0, Player.findCategorisededWith("Green", "Blue").size());
 	    
-	    List<Map> cloud = Tag.getCloud();
+	    List<Map> cloud = Category.getCloud();
 	    assertEquals(
-	        "[{tag=Blue, pound=1}, {tag=Green, pound=1}, {tag=Red, pound=2}]",
+	        "[{category=Blue, pound=1}, {category=Green, pound=1}, {category=Red, pound=2}]",
 	        cloud.toString()
 	    );
 	}
-	*/
+	
 
 }
 

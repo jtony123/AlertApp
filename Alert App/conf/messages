@@ -7,3 +7,25 @@ secure.password=Password
 secure.signin=Log in
 secure.welcome=Welcome to our nameLess App
 secure.instruction=Please login below
+
+
+playername=Player Name
+playernumber=Player ID
+dateadded=Date added
+playerPhoto=Player Photo
+coach=Coached by
+categories=Categorised as
+
+
+email=Email
+password=Password
+fullname=Full Name
+isAdmin=User is admin?
+
+name=Category name
+
+player=Player name
+playerIdentityNo= Player ID
+dataDate=Data logged date
+tT_Time=Total training time
+

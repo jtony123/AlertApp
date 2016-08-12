@@ -1,0 +1,44 @@
+#{extends 'main.html' /}
+#{set title:player /}
+ 
+ <nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">
+      <span>
+      <img src="@{'public/images/orreco-logo.png'}" alt="Orreco" />
+      nameLess App
+      </span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="@{Application.showAll()}">Overview</a></li>
+      <li><a href="#">something else</a></li>
+      <li><a href="#">and something else</a></li>
+    </ul>
+  </div>
+</nav>
+<br><br>
+
+
+
+<div class="container">
+  <ul class="pager">
+  #{if player.previous()}
+   <li class="previous">
+            <a href="@{Application.show(player.previous().id)}">
+                &lt&lt ${player.previous().playername}
+            </a>
+        </li>
+    #{/if}
+    #{if player.next()}
+        <li class="next">
+            <a href="@{Application.show(player.next().id)}">
+                ${player.next().playername} >>
+            </a>
+        </li>
+    #{/if}
+  </ul>
+  #{playerdisplay1 player:player, as:'full' /}
+</div>
+

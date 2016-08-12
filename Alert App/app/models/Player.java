@@ -16,6 +16,8 @@ public class Player extends Model {
 	public Integer playernumber;
 	public Date dateadded;
 	
+	public Blob playerPhoto;
+	
 	@Required
 	@ManyToOne
 	public Client coach;
@@ -26,9 +28,13 @@ public class Player extends Model {
 	@OneToMany(mappedBy="player", cascade=CascadeType.ALL)
 	public List<GPSData> gpsdata;
 	
-	public Player(String playerName, Integer playerNumber, Client coach){
+	public Player(String playerName, Integer playerNumber, Blob playerPhoto, Client coach){
 		this.playername = playerName;
 		this.playernumber = playerNumber;
+		if(playerPhoto != null){
+			this.playerPhoto=playerPhoto;
+		}
+		this.playerPhoto=playerPhoto;
 		this.coach = coach;
 		this.dateadded = new Date();
 		
@@ -44,12 +50,19 @@ public class Player extends Model {
 	    return this;
 	}
 	
+	public Player updatePhoto (Blob photo){
+		
+		this.playerPhoto=photo;
+		this.save();
+		return this;
+	}
+	
 	public Player previous() {
-	    return Player.find("dateadded < ? order by dateadded desc", dateadded).first();
+	    return Player.find("playernumber < ? order by playernumber desc", playernumber).first();
 	}
 	 
 	public Player next() {
-	    return Player.find("dateadded > ? order by dateadded asc", dateadded).first();
+	    return Player.find("playernumber > ? order by playernumber asc", playernumber).first();
 	}
 	
 	
@@ -82,7 +95,7 @@ public class Player extends Model {
 	public static List<Player> findCategorisededWith(String... categories) {
 	    return Player.find(
 	            "select distinct p from Player p join p.categories as t where t.name in (:categories) group by p.id, p.playername, p.coach having count(t.id) = :size"
-	    ).bind("tags", categories).bind("size", categories.length).fetch();
+	    ).bind("categories", categories).bind("size", categories.length).fetch();
 	}
 	
 	public String toString() {

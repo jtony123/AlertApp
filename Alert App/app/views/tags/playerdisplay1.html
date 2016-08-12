@@ -2,7 +2,7 @@
  
 <div class="player ${_as == 'summary' ? 'summary' : ''}">
     <h2 class="player-name">
-        <a href="#">${_player.playername}</a>
+        <a href="@{Application.show(_player.id)}">${_player.playername}</a>
     </h2>
     <div class="player-metadata">
         <span class="player-number">Player no. ${_player.playernumber}</span>,
@@ -27,6 +27,7 @@
  
 #{if _as == 'full'}
     <div class="gpsdatas">
+<!--     <img src="${_player.playerPhoto.get()}" height="180" width="180" /> -->
         <h3>
             ${_player.gpsdata.size() ?: 'no'} 
             datapoint${_player.gpsdata.size().pluralize()} :

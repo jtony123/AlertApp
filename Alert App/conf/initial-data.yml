@@ -38,7 +38,7 @@ Client(fred):
 Player(player1):
   playername: Jed Klumpp
   playernumber: 10
-  dateadded:  2016-08-05
+  dateadded:  2016-08-04
   coach:  bob
   Categorys: 
         - ateam
@@ -56,7 +56,7 @@ Player(player2):
 Player(player3):
   playername: Melvin Meriwether
   playernumber: 12
-  dateadded:  2016-08-04
+  dateadded:  2016-08-06
   coach:  bob
   Categorys: 
         - bteam
@@ -66,7 +66,45 @@ Player(player3):
 Player(player4):
   playername: Blake Lyman
   playernumber: 13
-  dateadded:  2016-08-04
+  dateadded:  2016-08-07
+  coach:  alice
+  Categorys: 
+        - bteam
+        - injured
+        
+Player(player5):
+  playername: Keith Payne
+  playernumber: 14
+  dateadded:  2016-08-07
+  coach:  alice
+  Categorys: 
+        - bteam
+        - injured
+        
+Player(player6):
+  playername: Alexander Davidson
+  playernumber: 15
+  dateadded:  2016-08-07
+  coach:  alice
+  Categorys: 
+        - bteam
+        - injured
+        
+        
+Player(player7):
+  playername: James Wallace
+  playernumber: 16
+  dateadded:  2016-08-07
+  coach:  alice
+  Categorys: 
+        - bteam
+        - injured
+        
+        
+Player(player8):
+  playername: Keith Gray
+  playernumber: 17
+  dateadded:  2016-08-07
   coach:  alice
   Categorys: 
         - bteam

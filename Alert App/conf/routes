@@ -2,9 +2,22 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+# Import CRUD routes
+*      /admin              module:crud
+
+# Import Secure routes
+# *       /                                       module:secure
+
+
+
 # Home page
-GET     /                                       Application.index
-POST    /authenticate                      			controllers.Application.authenticate()
+GET     /                                      Application.index
+POST    /login                      			Application.authenticate()
+
+
+# Dashboard page
+GET     /players/{id}                            Application.show
+
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
