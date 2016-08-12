@@ -10,28 +10,35 @@ import models.*;
 
 @With(Secure.class)
 public class Application extends Controller {
+	
+    @Before
+    static void setConnectedClient() {
+    	System.out.println("setConnected called");
+        if(Security.isConnected()) {
+            Client client = Client.find("byEmail", Security.connected()).first();
+            renderArgs.put("client", client.fullname);
+        }
+    }
 
+	
     public static void index() {
-    	System.out.println("index method called");
-        render();
+    	System.out.println("application.index method called");
+    	List<Player> players = Player.find("order by playernumber desc").fetch(10);
+        render(players);
     }
     
     public static void authenticate(){
-    	System.out.println("authenticate method called");
+    	System.out.println("application.authenticate method called");
+    	//Client client = Client.find(query, params);
     	List<Player> players = Player.find("order by playernumber desc").fetch(10);
-    	render("Application/dashboard.html", players);
+    	render("Application/index.html", players);
     }
     
     public static void showAll(){
     	System.out.println("showAll method called");
     	List<Player> players = Player.find("order by playernumber desc").fetch(10);
-    	for(Player p : players){
-    		System.out.println(p.playername + " - id=" + p.playerPhoto.getUUID());
-    		//response.setContentTypeIfNotSet(p.playerPhoto.type());
-    		//java.io.InputStream binaryData = p.playerPhoto.get();
-    	}
     	
-    	render("Application/dashboard.html", players);
+    	render("Application/index.html", players);
     }
     
 //    public static void userPhoto(long id) { 
