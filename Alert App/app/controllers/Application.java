@@ -11,54 +11,75 @@ import models.*;
 @With(Secure.class)
 public class Application extends Controller {
 	
+	static Client connectedClient;
+	
     @Before
     static void setConnectedClient() {
-    	System.out.println("setConnected called");
         if(Security.isConnected()) {
-            Client client = Client.find("byEmail", Security.connected()).first();
-            renderArgs.put("client", client.fullname);
+        	connectedClient = Client.find("byEmail", Security.connected()).first();
+            renderArgs.put("client", connectedClient.fullname);
         }
     }
 
-	
     public static void index() {
     	System.out.println("application.index method called");
-    	List<Player> players = Player.find("order by playernumber desc").fetch(10);
-        render(players);
-    }
-    
-    public static void authenticate(){
-    	System.out.println("application.authenticate method called");
-    	//Client client = Client.find(query, params);
-    	List<Player> players = Player.find("order by playernumber desc").fetch(10);
-    	render("Application/index.html", players);
-    }
-    
-    public static void showAll(){
-    	System.out.println("showAll method called");
-    	List<Player> players = Player.find("order by playernumber desc").fetch(10);
+    	List<Player> players = Player.find("byCoach", connectedClient).fetch();
     	
-    	render("Application/index.html", players);
+    	Date preTraindeadline = new Date();
+    	preTraindeadline.setHours(6);
+    	preTraindeadline.setMinutes(0);
+    	preTraindeadline.setSeconds(0);
+    	
+    	Date postTraindeadline = new Date();
+    	postTraindeadline.setHours(6);
+    	postTraindeadline.setMinutes(0);
+    	postTraindeadline.setSeconds(0);
+    	
+    	Date gpsdataDeadline = new Date();
+    	gpsdataDeadline.setHours(6);
+    	gpsdataDeadline.setMinutes(0);
+    	gpsdataDeadline.setSeconds(0);
+    	
+    	
+        render(players, preTraindeadline, postTraindeadline, gpsdataDeadline);
     }
     
-//    public static void userPhoto(long id) { 
-//    	   final User user = User.findById(id); 
-//    	   response.setContentTypeIfNotSet(user.photo.type());
-//    	   java.io.InputStream binaryData = user.photo.get();
-//    	   renderBinary(binaryData);
-//    	} 
-    
-    
-    public static void show(Long id) {
+    public static void listCategory(String category) {
+
+        List<Player> players = Player.findClientsPlayersCategorisedWith(connectedClient, category);
+        
+    	Date preTraindeadline = new Date();
+    	preTraindeadline.setHours(6);
+    	preTraindeadline.setMinutes(0);
+    	preTraindeadline.setSeconds(0);
     	
-    	System.out.println("show method with id="+id);
-        Player player = Player.findById(id);
-        if (player.playerPhoto.exists()){
-        	response.setContentTypeIfNotSet(player.playerPhoto.type());
-    		java.io.InputStream binaryData = player.playerPhoto.get();
-    		renderBinary(binaryData);
-        }
-		render(player);
+    	Date postTraindeadline = new Date();
+    	postTraindeadline.setHours(6);
+    	postTraindeadline.setMinutes(0);
+    	postTraindeadline.setSeconds(0);
+    	
+    	Date gpsdataDeadline = new Date();
+    	gpsdataDeadline.setHours(6);
+    	gpsdataDeadline.setMinutes(0);
+    	gpsdataDeadline.setSeconds(0);
+        render(category, players, preTraindeadline, postTraindeadline, gpsdataDeadline);
+    }
+ 
+    
+    public static void playerPhoto(long id) { 
+    	   final Player player = Player.findById(id); 
+    	   response.setContentTypeIfNotSet(player.playerPhoto.type());
+    	   java.io.InputStream binaryData = player.playerPhoto.get();
+    	   renderBinary(binaryData);
+    	} 
+    
+    
+    public static void show(int playernumber) {
+    	
+        	System.out.println("show method with id="+playernumber);
+            Player player = Player.find("byPlayernumber", playernumber).first();
+    		render(player);
+ 
     }
     
     public static void addPlayer(Long id, Blob photo) {

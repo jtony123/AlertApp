@@ -1,0 +1,143 @@
+*{ Display the player in grid layout }*
+ 
+			<div class="col-xs-12 col-sm-6 col-md-3 col-lg-2"
+			style="background-color: #337ab7; margin: 5px; overflow:hidden; padding-left: 5px; padding-right: 5px">
+
+			<h3 style="margin-bottom: 5px; margin-top:5px;">
+				<a href="@{Application.show(_player.playernumber)}" class="thumbnail" style="margin-bottom: 0px;">
+					<div >
+					#{if _player.playerPhoto.exists()}
+					<img class="img-responsive" src="@{Application.playerPhoto(_player.id)}" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
+					#{/if}
+					#{else}
+					<img class="img-responsive" src="@{'public/images/player-headshot.png'}" alt=${_player.playername} style="margin: 0 auto; max-width:150px;height:150px"/>
+					#{/else}
+					
+					</div>
+					<div class="text-nowrap" style="text-align: center;">
+						${_player.playername}
+						
+					</div>
+					
+				</a>
+			</h3>
+			<div>
+				#{list items:_player.categories, as:'cat'}
+           			<a href="@{Application.listCategory(cat.name)}"><span class="badge" style="background-color: white; color: #337ab7;">${cat}</span></a>
+       			#{/list}
+			</div>
+				
+					
+			<div class="btn-group btn-group-justified">
+			
+			<!-- check if player pre training has been completed -->
+			#{if _player.preTrain[0] != null}
+			
+				<!-- if pre training was completed since 6am this morning -->
+				#{if _player.preTrain[0].preTrainDate.getTime() > _preTraindeadline.getTime()}
+	  				<a href="#" class="btn btn-default" style="color: green; font-size: 15px; vertical-align:middle;">
+	  				<span>PRE</span>
+	  				<br>
+	  				<i class="glyphicon glyphicon-ok" ></i>
+	  				#{if _player.preTrain[0].answer.equals("poor")}
+	  					<i class="glyphicon glyphicon-flag" style="color:red;" data-toggle="tooltip" title="Feeling poorly!" ></i>
+	  				#{/if}
+	  				</a>
+	  			#{/if}
+	  			
+	  			<!-- if pre training has not been completed since 6am this morning, show red X -->
+	  			#{else}
+	  				<a href="#" class="btn btn-default" style="color: orange; font-size: 15px; vertical-align:middle;">
+	  				<span>PRE</span>
+	  				<br>
+	  				<i class="glyphicon glyphicon-remove" ></i>
+	  				#{if _player.preTrain[0].answer.equals("poor")}
+	  					<i class="glyphicon glyphicon-flag" style="color:red;" data-toggle="tooltip" title="Feeling poorly!" ></i>
+	  				#{/if}
+	  				</a>
+	  			#{/else}	
+  			#{/if}
+  			#{else}
+	  			<a href="#" class="btn btn-default" style="color: lightgrey; font-size: 15px; vertical-align:middle;">
+	  			<span>PRE </span>
+	  			<br>
+	  			<i class="glyphicon glyphicon-exclamation-sign" ></i></a>
+	  		#{/else}
+	  		
+	  		
+	  		
+	  		
+  				<!-- check if player post training has been completed -->
+  				#{if _player.postTrain[0] != null}
+			
+				<!-- if post training was completed since 12 noon today -->
+					#{if _player.postTrain[0].postTrainDate.getTime() > _postTraindeadline.getTime()}
+		  				<a href="#" class="btn btn-default" style="color: green; font-size: 15px; vertical-align:middle;">
+		  				<span>POS </span>
+		  				<br>
+		  				<i class="glyphicon glyphicon-ok" ></i>
+		  				#{if _player.postTrain[0].answer.equals("poor")}
+	  						<i class="glyphicon glyphicon-flag" style="color:red;" data-toggle="tooltip" title="Feeling poorly!" ></i>
+	  					#{/if}
+		  				</a>
+		  			#{/if}
+	  			
+	  				<!-- if post training has not been completed since 12 noon today -->
+		  			#{else}
+		  				<a href="#" class="btn btn-default" style="color: orange; font-size: 15px; vertical-align:middle;">
+		  				<span>POS</span>
+		  				<br>
+		  				<i class="glyphicon glyphicon-remove" ></i>
+			  				#{if _player.preTrain[0].answer.equals("poor")}
+			  					<i class="glyphicon glyphicon-flag" style="color:red;" data-toggle="tooltip" title="Feeling poorly!" ></i>
+			  				#{/if}
+		  				</a>
+	  				#{/else}	
+  				#{/if}
+  				#{else}
+		  			<a href="#" class="btn btn-default" style="color: lightgrey; font-size: 15px; vertical-align:middle;">
+		  			<span>POS </span>
+		  			<br>
+		  			<i class="glyphicon glyphicon-exclamation-sign" ></i></a>
+	  			#{/else}
+  				
+  				
+  				
+  				
+  				
+  				<!-- check if players GPS data is upti date and has any alerts showing -->
+  				
+  				#{if _player.gpsdata[0] != null}
+  				
+  					<!-- if gpsdata was completed since 6am today -->
+					#{if _player.gpsdata[0].dataDate.getTime() > _gpsdataDeadline.getTime()}
+		  				<a href="#" class="btn btn-default" style="color: green; font-size: 15px; vertical-align:middle;">
+		  				<span>GPS</span>
+		  				<br>
+		  				<i class="glyphicon glyphicon-ok" ></i>
+		  				#{if _player.gpsdata[0].tT_Time < 20}
+	  						<i class="glyphicon glyphicon-flag" style="color:red;" data-toggle="tooltip" title="Very low training time!" ></i>
+	  					#{/if}
+		  				</a>
+		  			#{/if}
+	  			
+	  				<!-- if gpsdata was not completed since 6am today -->
+		  			#{else}
+		  				<a href="#" class="btn btn-default" style="color: orange; font-size: 15px; vertical-align:middle;">
+		  				<span>GPS</span>
+		  				<br>
+		  				<i class="glyphicon glyphicon-remove" ></i>
+		  				</a>
+	  				#{/else}
+  				
+  				#{/if}
+  				#{else}
+	  				<a href="#" class="btn btn-default" style="color: lightgrey; font-size: 15px; vertical-align:middle;">
+	  				<span>GPS</span>
+	  				<br>
+	  				<i class="glyphicon glyphicon-exclamation-sign" ></i></a>
+  				#{/else}
+			</div>
+	
+
+		</div>

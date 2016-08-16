@@ -28,6 +28,12 @@ public class Player extends Model {
 	@OneToMany(mappedBy="player", cascade=CascadeType.ALL)
 	public List<GPSData> gpsdata;
 	
+	@OneToMany(mappedBy="player", cascade=CascadeType.ALL)
+	public List<PreTrain> preTrain;
+	
+	@OneToMany(mappedBy="player", cascade=CascadeType.ALL)
+	public List<PostTrain> postTrain;
+	
 	public Player(String playerName, Integer playerNumber, Blob playerPhoto, Client coach){
 		this.playername = playerName;
 		this.playernumber = playerNumber;
@@ -39,7 +45,12 @@ public class Player extends Model {
 		this.dateadded = new Date();
 		
 		this.gpsdata = new ArrayList<GPSData>();
+		this.preTrain = new ArrayList<PreTrain>();
+		this.postTrain = new ArrayList<PostTrain>();
 		this.categories = new TreeSet<Category>();
+		// all players are automatically categorised in All
+		this.categoriseItWith("All");
+		
 	}
 	
 	public Player addGPSData(Date date, int t_ttime) {
@@ -50,6 +61,22 @@ public class Player extends Model {
 	    return this;
 	}
 	
+	public Player addPreTrain(Date date, String answer, boolean isComplete) {
+		
+		PreTrain preTrain = new PreTrain(this, date, answer, isComplete);
+		this.preTrain.add(preTrain);
+		this.save();
+		return this;
+	}
+	
+	public Player addPostTrain(Date date, String answer, boolean isComplete) {
+		
+		PostTrain postTrain = new PostTrain(this, date, answer, isComplete);
+		this.postTrain.add(postTrain);
+		this.save();
+		return this;
+	}
+	
 	public Player updatePhoto (Blob photo){
 		
 		this.playerPhoto=photo;
@@ -58,11 +85,24 @@ public class Player extends Model {
 	}
 	
 	public Player previous() {
-	    return Player.find("playernumber < ? order by playernumber desc", playernumber).first();
+
+		System.out.println("previous called");
+//		Client client = this.coach;
+		return  Player.find("select distinct p from Player p where p.coach=?1 AND p.playernumber < ?2 order by playernumber desc", this.coach, playernumber).first();
+//		//Player p =  Player.find("playernumber > ?1 where p.coach=?2 order by playernumber desc", playernumber, client).first();
+//		List<Player> ps =  Player.find("select distinct p from Player p where p.coach=?1 AND p.playernumber > ?2 order by playernumber desc", this.coach, playernumber).fetch();
+//		for(Player pa: ps){
+//			System.out.println(pa.playernumber + " - " +pa.playername + " - " + pa.coach.fullname);
+//		}
+//		System.out.println();
+////		
+//		return p;
+//	    
 	}
 	 
 	public Player next() {
-	    return Player.find("playernumber > ? order by playernumber asc", playernumber).first();
+		System.out.println("next called");
+	    return Player.find("select distinct p from Player p where p.coach=?1 AND p.playernumber > ?2 order by playernumber desc", this.coach, playernumber).first();
 	}
 	
 	
@@ -86,6 +126,19 @@ public class Player extends Model {
 		return Player.find("select distinct p from Player p join p.categories as t where t.name = ?", category).fetch();		
 		
 	}
+	
+	/**
+	 * Get players in a specific category
+	 * @param name
+	 * @return
+	 */
+	public static List<Player> findClientsPlayersCategorisedWith(Client client, String category) {
+		
+		return Player.find("select distinct p from Player p join p.categories c where p.coach=?1 AND c.name=?2", client, category).fetch();		
+		
+	}
+	
+
 	
 	/**
 	 * Get players belonging to several categories

@@ -1,5 +1,8 @@
 # you describe your data using the YAML notation here
 # and then load them using Fixtures.load("data.yml")
+Category(all):
+    name:           All
+
 
 Category(ateam):
     name:           ATeam
@@ -27,7 +30,6 @@ Client(alice):
   email: alice@orreco.com
   password: secret
   fullname: Alice
-  isAdmin:  true
   
 Client(fred):
   email: fred@orreco.com
@@ -38,27 +40,30 @@ Client(fred):
 Player(player1):
   playername: Jed Klumpp
   playernumber: 10
-  dateadded:  2016-08-04
+  dateadded:  2016-08-04 00:00
   coach:  bob
-  Categorys: 
+  categories: 
+        - all
         - ateam
         - injured
         
 Player(player2):
   playername: Nelson Riemann
   playernumber: 11
-  dateadded:  2016-08-05
+  dateadded:  2016-08-05 00:00
   coach:  bob
-  Categorys: 
+  categories: 
+        - all
         - ateam
         - onloan
   
 Player(player3):
   playername: Melvin Meriwether
   playernumber: 12
-  dateadded:  2016-08-06
+  dateadded:  2016-08-06 00:00
   coach:  bob
-  Categorys: 
+  categories:
+        - all 
         - bteam
         - onloan
         
@@ -66,37 +71,40 @@ Player(player3):
 Player(player4):
   playername: Blake Lyman
   playernumber: 13
-  dateadded:  2016-08-07
+  dateadded:  2016-08-07 00:00
   coach:  alice
-  Categorys: 
+  categories: 
+        - all
         - bteam
-        - injured
         
 Player(player5):
   playername: Keith Payne
   playernumber: 14
-  dateadded:  2016-08-07
+  dateadded:  2016-08-07 00:00
   coach:  alice
-  Categorys: 
+  categories: 
+        - all
         - bteam
         - injured
         
 Player(player6):
   playername: Alexander Davidson
   playernumber: 15
-  dateadded:  2016-08-07
+  dateadded:  2016-08-07 00:00
   coach:  alice
-  Categorys: 
+  categories: 
+        - all
         - bteam
-        - injured
+        - onloan
         
         
 Player(player7):
   playername: James Wallace
   playernumber: 16
-  dateadded:  2016-08-07
+  dateadded:  2016-08-07 00:00
   coach:  alice
-  Categorys: 
+  categories: 
+        - all
         - bteam
         - injured
         
@@ -104,9 +112,41 @@ Player(player7):
 Player(player8):
   playername: Keith Gray
   playernumber: 17
-  dateadded:  2016-08-07
+  dateadded:  2016-08-07 00:00
   coach:  alice
-  Categorys: 
+  categories:
+        - all 
+        - bteam
+        - injured
+        
+Player(player9):
+  playername: Dan Peake
+  playernumber: 18
+  dateadded:  2016-08-015 00:00
+  coach:  bob
+  categories: 
+        - all
+        - bteam
+        - injured
+
+Player(player10):
+  playername: Benjamin Nash
+  playernumber: 19
+  dateadded:  2016-08-15 00:00
+  coach:  bob
+  categories: 
+        - all
+        - bteam
+        - injured
+        
+        
+Player(player11):
+  playername: William Hudson
+  playernumber: 20
+  dateadded:  2016-08-15 00:00
+  coach:  alice
+  categories: 
+        - all
         - bteam
         - injured
   
@@ -114,22 +154,72 @@ Player(player8):
 GPSData(gpsdata1):
   player: player1
   playerIdentityNo: 10
-  dataDate: 2016-8-05
+  dataDate: 2016-8-05 00:00
   tT_Time:  100
   
 GPSData(gpsdata2):
   player: player1
   playerIdentityNo: 10
-  dataDate: 2016-8-04
+  dataDate: 2016-8-04 00:00
   tT_Time:  200
   
 GPSData(gpsdata3):
   player: player2
   playerIdentityNo: 11
-  dataDate: 2016-8-04
+  dataDate: 2016-8-04 00:00
   tT_Time:  300
   
+GPSData(gpsdata4):
+  player: player3
+  playerIdentityNo: 12
+  dataDate: 2016-8-15 16:00
+  tT_Time:  10
   
+PreTrain(preTrain1):
+  player: player1
+  preTrainDate: 2016-8-15 11:00
+  answer: poor
+  isComplete:  true
+  
+PreTrain(preTrain2):
+  player: player2
+  preTrainDate: 2016-8-15 11:00
+  answer: fine
+  isComplete:  true
+  
+PreTrain(preTrain3):
+  player: player3
+  preTrainDate: 2016-8-14 11:00
+  answer: fine
+  isComplete:  true
+  
+PreTrain(preTrain4):
+  player: player4
+  preTrainDate: 2016-8-15 11:00
+  answer: fine
+  isComplete:  true
+  
+PostTrain(postTrain1):
+  player: player1
+  postTrainDate: 2016-8-15 12:00
+  answer: great
+  isComplete:  true
+  
+PostTrain(postTrain2):
+  player: player2
+  postTrainDate: 2016-8-15 13:00
+  answer: good
+  isComplete:  true
 
+PostTrain(postTrain3):
+  player: player3
+  postTrainDate: 2016-8-15 12:00
+  answer: great
+  isComplete:  true
   
+PostTrain(postTrain4):
+  player: player4
+  postTrainDate: 2016-8-15 13:00
+  answer: good
+  isComplete:  true
   

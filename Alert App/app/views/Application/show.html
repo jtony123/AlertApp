@@ -1,23 +1,43 @@
 #{extends 'main.html' /}
 #{set title:player /}
  
- <nav class="navbar navbar-inverse navbar-fixed-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">
-      <span>
-      <img src="@{'public/images/orreco-logo.png'}" alt="Orreco" />
-      nameLess App
-      </span>
-      </a>
-    </div>
-    <ul class="nav navbar-nav">
-      <li><a href="@{Application.showAll()}">Overview</a></li>
-      <li><a href="#">something else</a></li>
-      <li><a href="#">and something else</a></li>
-    </ul>
-  </div>
-</nav>
+ <div class="container-fluid">
+
+<!-- Navigation Bar -->
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-lg-12">
+			<nav class="navbar navbar-inverse navbar-fixed-top">
+			  <div class="container-fluid">
+			    <div class="navbar-header">
+			      <a class="navbar-brand" href="#"> <span> <img
+								src="@{'public/images/orreco-logo.png'}" alt="Orreco" /> 
+								nameLess App
+						</span>
+						</a>
+			    </div>
+			    <ul class="nav navbar-nav">
+			      <li><a href="@{Application.index()}">Dashboard</a></li>
+			      <li class="active"><a href="#">Report</a></li>
+			      <li><a href="#">GPS</a></li> 
+			    </ul>
+			    <ul class="nav navbar-nav navbar-right">
+			    <li><a href="#">
+          			<span class="glyphicon glyphicon-user"></span> ${client}
+        		</a></li>
+			      #{secure.check 'admin'}
+            		<li class="${request.controller == 'Players' ? 'selected' : ''}">
+                		<a href="@{Admin.index()}">Admin Area</a>
+            		</li>
+            		#{/secure.check}
+			      <li><a href="@{Secure.logout()}"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
+			    </ul>
+			  </div>
+			</nav>
+</div>
+</div>
+</div>
+
+
 <br><br>
 
 
@@ -26,19 +46,19 @@
   <ul class="pager">
   #{if player.previous()}
    <li class="previous">
-            <a href="@{Application.show(player.previous().id)}">
+            <a href="@{Application.show(player.previous().playernumber)}">
                 &lt&lt ${player.previous().playername}
             </a>
         </li>
     #{/if}
     #{if player.next()}
         <li class="next">
-            <a href="@{Application.show(player.next().id)}">
+            <a href="@{Application.show(player.next().playernumber)}">
                 ${player.next().playername} >>
             </a>
         </li>
     #{/if}
   </ul>
-  #{playerdisplay1 player:player, as:'full' /}
+  #{playerdisplay player:player, as:'full' /}
 </div>
 
