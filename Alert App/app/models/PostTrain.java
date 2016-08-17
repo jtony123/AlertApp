@@ -17,7 +17,7 @@ public class PostTrain extends Model {
 	public Player player;
 	
 	@Required
-	public Date postTrainDate;
+	public Date inputDate;
 	
 	@Required
 	public String answer;
@@ -30,7 +30,7 @@ public class PostTrain extends Model {
 	public PostTrain (Player player, Date postTrainDate, String answer, boolean isComplete){
 		
 		this.player = player;	
-		this.postTrainDate = postTrainDate;
+		this.inputDate = postTrainDate;
 		this.answer = answer;
 		this.isComplete = isComplete;
 		

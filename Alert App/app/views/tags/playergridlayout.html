@@ -34,7 +34,8 @@
 			#{if _player.preTrain[0] != null}
 			
 				<!-- if pre training was completed since 6am this morning -->
-				#{if _player.preTrain[0].preTrainDate.getTime() > _preTraindeadline.getTime()}
+				#{if _player.preTrain[0].inputDate.getTime() > 
+				_preTraindeadline.getTime()}
 	  				<a href="#" class="btn btn-default" style="color: green; font-size: 15px; vertical-align:middle;">
 	  				<span>PRE</span>
 	  				<br>
@@ -71,7 +72,7 @@
   				#{if _player.postTrain[0] != null}
 			
 				<!-- if post training was completed since 12 noon today -->
-					#{if _player.postTrain[0].postTrainDate.getTime() > _postTraindeadline.getTime()}
+					#{if _player.postTrain[0].inputDate.getTime() > _postTraindeadline.getTime()}
 		  				<a href="#" class="btn btn-default" style="color: green; font-size: 15px; vertical-align:middle;">
 		  				<span>POS </span>
 		  				<br>
@@ -110,7 +111,7 @@
   				#{if _player.gpsdata[0] != null}
   				
   					<!-- if gpsdata was completed since 6am today -->
-					#{if _player.gpsdata[0].dataDate.getTime() > _gpsdataDeadline.getTime()}
+					#{if _player.gpsdata[0].inputDate.getTime() > _gpsdataDeadline.getTime()}
 		  				<a href="#" class="btn btn-default" style="color: green; font-size: 15px; vertical-align:middle;">
 		  				<span>GPS</span>
 		  				<br>

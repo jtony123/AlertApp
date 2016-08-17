@@ -1,0 +1,88 @@
+ 
+ #{if _player.gpsdata[0] != null}
+
+
+	<!-- if the players pre training is complete-->
+	#{if _player.gpsdata[0].inputDate.getTime() > _pt.getTime()}
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" data-parent="#accordion" href="#${_panelcollapse}"
+					class="btn btn-default"
+					style="color: green; font-size: 15px; width: 125px;">
+					<span>${_label}</span> <br> <i
+					class="glyphicon glyphicon-ok"></i> <!-- check if any flags are to be raised -->
+					
+					
+						#{if _player.gpsdata[0].tT_Time > 100} 
+						<i class="glyphicon glyphicon-flag" style="color: red;"></i> 
+						#{/if}
+						
+						<!-- check if any comments available -->
+					
+						#{if _player.gpsdata[0].tT_Time > 0}  
+						<i class="glyphicon glyphicon-comment" style="color: black;"></i> 
+						#{/if}
+					
+				</a>
+			</h4>
+		</div>
+		<div id="${_panelcollapse}" class="panel-collapse collapse">
+			<div class="panel-body">Answers given:
+				something will be here</div>
+		</div>
+	</div>
+	
+	#{/if}
+	
+	<!-- if the players pre training is not complete-->
+	#{else}
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" data-parent="#accordion" href="#${_panelcollapse}"
+					class="btn btn-default"
+					style="color: orange; font-size: 15px; width: 125px;">
+					<span>${_label}</span> 
+					<br> 
+					<i class="glyphicon glyphicon-remove"></i> 
+					
+						#{if _player.gpsdata[0].tT_Time = 0} 
+						<i class="glyphicon glyphicon-flag" style="color: red;"></i> 
+						#{/if}
+						
+						<!-- check if any comments available -->
+					
+						#{if _player.gpsdata[0].tT_Time = 0}  
+						<i class="glyphicon glyphicon-comment" style="color: black;"></i> 
+						#{/if}
+					
+				</a>
+			</h4>
+		</div>
+		<div id="${_panelcollapse}" class="panel-collapse collapse">
+			<div class="panel-body">Questionnaire not complete</div>
+		</div>
+	</div>
+	#{/else}
+	
+#{/if} 
+
+#{else}
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" data-parent="#accordion" href="#${_panelcollapse}"
+					class="btn btn-default"
+					style="color: grey; font-size: 15px; width: 125px;"> 
+					<span>${_label}</span> 
+					<br> 
+					<i class="glyphicon glyphicon-exclamation-sign"></i>
+				</a>
+			</h4>
+		</div>
+		<div id="${_panelcollapse}" class="panel-collapse collapse">
+			<div class="panel-body">No data yet for this player</div>
+		</div>
+	</div>
+#{/else}

@@ -1,76 +1,28 @@
 #{extends 'main.html' /} #{set title:'Category : '+ category /}
 
-<script src="@{'public/javascripts/jquery.js'}"></script>
-<script src="@{'public/javascripts/bootstrap.js'}"></script>
+<!-- insert the standard nav bar -->
+#{navigationbar client:client, active:active, category:category, categories:categories/}
 
 
-
-<div class="container-fluid">
-
-<!-- Navigation Bar -->
-	<div class="row">
-		<div class="col-xs-12 col-sm-12 col-lg-12">
-			<nav class="navbar navbar-inverse navbar-fixed-top">
-			  <div class="container-fluid">
-			    <div class="navbar-header">
-			      <a class="navbar-brand" href="#"> <span> <img
-								src="@{'public/images/orreco-logo.png'}" alt="Orreco" /> 
-								nameLess App
-						</span>
-						</a>
-			    </div>
-			    <ul class="nav navbar-nav">
-			      <li class="active"><a href="@{Application.index()}">Dashboard</a></li>
-			      <li><a href="@{Application.show(null)}">Report</a></li>
-			      <li><a href="#">GPS</a></li> 
-			    </ul>
-			    <ul class="nav navbar-nav navbar-right">
-			    <li><a href="#">
-          			<span class="glyphicon glyphicon-user"></span> ${client}
-        		</a></li>
-			      #{secure.check 'admin'}
-            		<li class="${request.controller == 'Players' ? 'selected' : ''}">
-                		<a href="@{Admin.index()}">Admin Area</a>
-            		</li>
-            		#{/secure.check}
-			      <li><a href="@{Secure.logout()}"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
-			    </ul>
-			  </div>
-			</nav>
-</div>
-</div>
-</div>
 <!-- Player Grid -->
 <div class="container-fluid">
-#{if players.size()}
-
-
-<!-- 	<h3>Players under this coach</h3> -->
+	#{if players.size()}
 
 	<div class="row">
-		#{list items:players, as:'player'}
-		
-		#{playergridlayout player:player, preTraindeadline:preTraindeadline, postTraindeadline:postTraindeadline, gpsdataDeadline:gpsdataDeadline /}
-		
-		
-		#{/list}
+	
+	#{list items:players, as:'player'}
 
-
-	<nav class="navbar navbar-inverse navbar-fixed-bottom">
-  <div class="container-fluid">
-    <ul class="nav navbar-nav" style="padding-top:0px; padding-bottom:0px;">
-      <li><a href="#">nameLess App</a></li>
-      <li><a href="#">v${play.Play.configuration.getProperty("app.version", "1.2")}</a></li> 
-    </ul>
-    <ul class="nav navbar-nav navbar-right" style="padding-top:0px; padding-bottom:0px;">
-		<li><a href="http://www.orreco.com/" class="pull-right" target="_blank">&copy; ${org.joda.time.DateTime.now().year().getAsText()} ORRECO</a></li>
-	</ul>
-  </div>
-</nav>
+		#{playergridlayout player:player, preTraindeadline:preTraindeadline,
+		postTraindeadline:postTraindeadline, gpsdataDeadline:gpsdataDeadline/} 
+		
+	#{/list}
+	#{/if} 
+	
+	</div>
 </div>
 
-
-#{/if} 
+<!-- insert the standard footer -->
+#{footer /}
 
 
 

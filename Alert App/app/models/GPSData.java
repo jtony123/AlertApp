@@ -17,7 +17,7 @@ public class GPSData extends Model {
 	public int playerIdentityNo;
 	
 	@Required
-	public Date dataDate;
+	public Date inputDate;
 	
 	@Required
 	public int tT_Time;
@@ -26,7 +26,7 @@ public class GPSData extends Model {
 		
 		this.player = player;
 		this.playerIdentityNo = playerId;
-		this.dataDate = dataDate;
+		this.inputDate = dataDate;
 		this.tT_Time = tttime;
 		
 	}

@@ -1,48 +1,10 @@
 #{extends 'main.html' /}
 #{set title:player /}
- 
- <div class="container-fluid">
 
-<!-- Navigation Bar -->
-	<div class="row">
-		<div class="col-xs-12 col-sm-12 col-lg-12">
-			<nav class="navbar navbar-inverse navbar-fixed-top">
-			  <div class="container-fluid">
-			    <div class="navbar-header">
-			      <a class="navbar-brand" href="#"> <span> <img
-								src="@{'public/images/orreco-logo.png'}" alt="Orreco" /> 
-								nameLess App
-						</span>
-						</a>
-			    </div>
-			    <ul class="nav navbar-nav">
-			      <li><a href="@{Application.index()}">Dashboard</a></li>
-			      <li class="active"><a href="#">Report</a></li>
-			      <li><a href="#">GPS</a></li> 
-			    </ul>
-			    <ul class="nav navbar-nav navbar-right">
-			    <li><a href="#">
-          			<span class="glyphicon glyphicon-user"></span> ${client}
-        		</a></li>
-			      #{secure.check 'admin'}
-            		<li class="${request.controller == 'Players' ? 'selected' : ''}">
-                		<a href="@{Admin.index()}">Admin Area</a>
-            		</li>
-            		#{/secure.check}
-			      <li><a href="@{Secure.logout()}"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
-			    </ul>
-			  </div>
-			</nav>
-</div>
-</div>
-</div>
+<!-- insert the standard nav bar -->
+#{navigationbar client:client, active:active /}
 
-
-<br><br>
-
-
-
-<div class="container">
+<div class="container-fluid">
   <ul class="pager">
   #{if player.previous()}
    <li class="previous">
@@ -59,6 +21,97 @@
         </li>
     #{/if}
   </ul>
-  #{playerdisplay player:player, as:'full' /}
-</div>
+  </div>
+  
+  
+  <div class="container-fluid">
+<div class="row" style="overflow:hidden;">
+	<!-- left column -->
 
+		<div class="col-xs-12 col-sm-6 col-md-3 col-lg-2" style="background-color: #337ab7; overflow:hidden; padding-left: 5px; padding-right: 5px; margin-bottom: -99999px; padding-bottom: 99999px;">
+
+			<div>
+					#{list items:player.categories, as:'cat'}
+	           			<a href="@{Application.listCategory(cat.name)}"><span class="badge" style="background-color: white; color: #337ab7;">${cat}</span></a>
+	       			#{/list}
+			</div>
+			
+			<h3 style="margin-bottom: 5px; margin-top:5px;">
+				<a href="@{Application.show(player.playernumber)}" class="thumbnail" style="margin-bottom: 0px;">
+					<div >
+						#{if player.playerPhoto.exists()}
+						<img class="img-responsive" src="@{Application.playerPhoto(player.id)}" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
+						#{/if}
+						#{else}
+						<img class="img-responsive" src="@{'public/images/player-headshot.png'}" alt=${player.playername} style="margin: 0 auto; max-width:150px;height:150px"/>
+						#{/else}
+						
+					</div>
+					<div class="text-nowrap" style="text-align: center;">
+							${player.playername}
+					</div>
+				</a>
+			</h3>
+			<div>
+			added : ${player.dateadded}
+			</div>
+		</div>	
+
+
+
+		
+		<div class="col-xs-12 col-sm-6 col-md-9 col-lg-10" style="background-color: #337ab7; margin: 5px; overflow:hidden; padding-left: 5px; padding-right: 5px;  margin:0px;">
+			
+			<div class="container-fluid" style="margin:5px;">
+  
+			  <div class="panel-group" id="accordion">
+			    
+			    <!-- pre train report -->
+			    
+		#{playerstatuspanel player:player, label:"PRE training ", playerData:player.preTrain, pt:preTraindeadline, panelcollapse:"collapse1" /}
+		
+		#{playerstatuspanel player:player, label:"POST training", playerData:player.postTrain, pt:postTraindeadline, panelcollapse:"collapse2" /}
+			
+		#{playergpspanel player:player, label:"GPS data", pt:gpsdataDeadline, panelcollapse:"collapse3" /}
+		
+		
+			    
+			  </div><!-- end panel-group -->
+			  
+			</div><!-- end container -->
+			
+		</div><!-- end column -->
+		
+
+		</div>
+		</div>
+		
+		
+		<!-- the questionnaire tabs -->
+<div class="container-fluid">
+
+		  <ul class="nav nav-tabs nav-justified">
+		    <li class="active"><a data-toggle="tab" href="#home">Pre Training Questionnaire</a></li>
+		    <li><a data-toggle="tab" href="#menu1">Post Training Questionnaire</a></li>
+		    <li><a data-toggle="tab" href="#menu2">Get GPS Data</a></li>
+		  </ul>
+
+		  <div class="tab-content">
+		    <div id="home" class="tab-pane fade in active">
+		      <h3>a list of questions</h3>
+		    </div>
+		    <div id="menu1" class="tab-pane fade">
+		      <h3>another list of questions</h3>
+		   	</div>
+		    <div id="menu2" class="tab-pane fade">
+		      <h3>a button to upload new gps data</h3>
+		   </div>
+		  </div>
+</div>
+  
+  
+
+  
+<!-- insert the standard footer -->
+#{footer /}
+		

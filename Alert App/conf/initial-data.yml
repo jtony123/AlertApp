@@ -154,72 +154,72 @@ Player(player11):
 GPSData(gpsdata1):
   player: player1
   playerIdentityNo: 10
-  dataDate: 2016-8-05 00:00
+  inputDate: 2016-8-05 00:00
   tT_Time:  100
   
 GPSData(gpsdata2):
   player: player1
   playerIdentityNo: 10
-  dataDate: 2016-8-04 00:00
+  inputDate: 2016-8-04 00:00
   tT_Time:  200
   
 GPSData(gpsdata3):
   player: player2
   playerIdentityNo: 11
-  dataDate: 2016-8-04 00:00
+  inputDate: 2016-8-04 00:00
   tT_Time:  300
   
 GPSData(gpsdata4):
   player: player3
   playerIdentityNo: 12
-  dataDate: 2016-8-15 16:00
+  inputDate: 2016-8-15 16:00
   tT_Time:  10
   
 PreTrain(preTrain1):
   player: player1
-  preTrainDate: 2016-8-15 11:00
+  inputDate: 2016-8-15 11:00
   answer: poor
   isComplete:  true
   
 PreTrain(preTrain2):
   player: player2
-  preTrainDate: 2016-8-15 11:00
+  inputDate: 2016-8-15 11:00
   answer: fine
   isComplete:  true
   
 PreTrain(preTrain3):
   player: player3
-  preTrainDate: 2016-8-14 11:00
+  inputDate: 2016-8-14 11:00
   answer: fine
   isComplete:  true
   
 PreTrain(preTrain4):
   player: player4
-  preTrainDate: 2016-8-15 11:00
+  inputDate: 2016-8-15 11:00
   answer: fine
   isComplete:  true
   
 PostTrain(postTrain1):
   player: player1
-  postTrainDate: 2016-8-15 12:00
+  inputDate: 2016-8-15 12:00
   answer: great
   isComplete:  true
   
 PostTrain(postTrain2):
   player: player2
-  postTrainDate: 2016-8-15 13:00
+  inputDate: 2016-8-15 13:00
   answer: good
   isComplete:  true
 
 PostTrain(postTrain3):
   player: player3
-  postTrainDate: 2016-8-15 12:00
+  inputDate: 2016-8-15 12:00
   answer: great
   isComplete:  true
   
 PostTrain(postTrain4):
   player: player4
-  postTrainDate: 2016-8-15 13:00
+  inputDate: 2016-8-15 13:00
   answer: good
   isComplete:  true
   

@@ -89,13 +89,13 @@ public class BasicTest extends UnitTest {
 	    assertNotNull(firstData);
 	    assertEquals(10, firstData.playerIdentityNo);
 	    assertEquals(100, firstData.tT_Time);
-	    assertNotNull(firstData.dataDate);
+	    assertNotNull(firstData.inputDate);
 	 
 	    GPSData secondDataPoint = bobPlayerGPS.get(1);
 	    assertNotNull(secondDataPoint);
 	    assertEquals(10, secondDataPoint.playerIdentityNo);
 	    assertEquals(200, secondDataPoint.tT_Time);
-	    assertNotNull(secondDataPoint.dataDate);
+	    assertNotNull(secondDataPoint.inputDate);
 	}
 	
 	

@@ -16,7 +16,7 @@ public class PreTrain extends Model {
 	public Player player;
 	
 	@Required
-	public Date preTrainDate;
+	public Date inputDate;
 	
 	@Required
 	public String answer;
@@ -29,7 +29,7 @@ public class PreTrain extends Model {
 	public PreTrain (Player player, Date preTrainDate, String answer, boolean isComplete){
 		
 		this.player = player;	
-		this.preTrainDate = preTrainDate;
+		this.inputDate = preTrainDate;
 		this.answer = answer;
 		this.isComplete = isComplete;
 		

@@ -12,7 +12,6 @@ public class Security extends Secure.Security {
 	
 	static boolean check(String profile) {
 		
-		System.out.println("security.check called");
 	    if("admin".equals(profile)) {
 	        return Client.find("byEmail", connected()).<Client>first().isAdmin;
 	    }

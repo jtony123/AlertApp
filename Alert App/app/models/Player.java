@@ -86,23 +86,12 @@ public class Player extends Model {
 	
 	public Player previous() {
 
-		System.out.println("previous called");
-//		Client client = this.coach;
-		return  Player.find("select distinct p from Player p where p.coach=?1 AND p.playernumber < ?2 order by playernumber desc", this.coach, playernumber).first();
-//		//Player p =  Player.find("playernumber > ?1 where p.coach=?2 order by playernumber desc", playernumber, client).first();
-//		List<Player> ps =  Player.find("select distinct p from Player p where p.coach=?1 AND p.playernumber > ?2 order by playernumber desc", this.coach, playernumber).fetch();
-//		for(Player pa: ps){
-//			System.out.println(pa.playernumber + " - " +pa.playername + " - " + pa.coach.fullname);
-//		}
-//		System.out.println();
-////		
-//		return p;
-//	    
+		return Player.find("select distinct p from Player p where p.coach=?1 AND p.playernumber < ?2 order by playernumber desc", this.coach, playernumber).first();
+		
 	}
 	 
 	public Player next() {
-		System.out.println("next called");
-	    return Player.find("select distinct p from Player p where p.coach=?1 AND p.playernumber > ?2 order by playernumber desc", this.coach, playernumber).first();
+	    return Player.find("select distinct p from Player p where p.coach=?1 AND p.playernumber > ?2 order by playernumber asc", this.coach, playernumber).first();
 	}
 	
 	

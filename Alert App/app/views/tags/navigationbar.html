@@ -1,0 +1,57 @@
+*{ Display the standard navgation bar}*
+
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
+<div class="container-fluid">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#"> <span> <img
+					src="@{'public/images/orreco-logo.png'}" alt="Orreco" /> nameLess
+					App
+			</span>
+			</a>
+		</div>
+		<ul class="nav navbar-nav">
+		#{if _active.equals("dashboard")}
+			<li class="active"><a href="@{Application.index()}">Dashboard</a></li>
+		#{/if}
+		#{else}
+			<li><a href="@{Application.index()}">Dashboard</a></li>
+		#{/else}
+		
+		#{ifnot _active.equals("show")} 
+			#{if _active.equals("categorised")}
+			<li class="active" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="@{Application.index()}">${_category} <span class="caret"></span></a>
+	        	<ul class="dropdown-menu dropdown-menu-right">
+	        		#{list items:_categories, as:'cat'}
+	          			<li><a href="@{Application.listCategory(cat.name)}">${cat}</a></li>
+	          		#{/list}
+	        	</ul>
+	      	</li>
+			#{/if}
+			#{else}
+				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="@{Application.index()}">${_categories[0]} <span class="caret"></span></a>
+	        	<ul class="dropdown-menu dropdown-menu-right">
+	        		#{list items:_categories, as:'cat'}
+	          			<li><a href="@{Application.listCategory(cat.name)}">${cat}</a></li>
+	          		#{/list}
+	        	</ul>
+	      	</li>
+			#{/else}
+		#{/ifnot}
+      
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			<li><a href="#"> <span class="glyphicon glyphicon-user"></span>
+					${_client}
+			</a></li> #{secure.check 'admin'}
+			<li class="${request.controller == 'Players' ? 'selected' : ''}">
+				<a href="@{Admin.index()}">Admin Area</a>
+			</li> #{/secure.check}
+			<li><a href="@{Secure.logout()}"><span
+					class="glyphicon glyphicon-log-out"></span> Log out</a></li>
+		</ul>
+	</nav>
+</div>
