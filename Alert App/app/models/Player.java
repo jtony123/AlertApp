@@ -25,6 +25,9 @@ public class Player extends Model {
 	@ManyToMany(cascade=CascadeType.PERSIST)
 	public Set<Category> categories;
 	
+	@ManyToMany(cascade=CascadeType.PERSIST)
+	public Set<Question> questions;
+	
 	@OneToMany(mappedBy="player", cascade=CascadeType.ALL)
 	public List<GPSData> gpsdata;
 	
@@ -51,11 +54,13 @@ public class Player extends Model {
 		// all players are automatically categorised in All
 		this.categoriseItWith("All");
 		
+		this.questions = new TreeSet<Question>();
+		
 	}
 	
 	public Player addGPSData(Date date, int t_ttime) {
 		
-		GPSData newGPSData = new GPSData(this, this.playernumber, date, t_ttime).save();
+		GPSData newGPSData = new GPSData(this, this.playernumber, date, "", t_ttime).save();
 	    this.gpsdata.add(newGPSData);
 	    this.save();
 	    return this;
@@ -63,15 +68,15 @@ public class Player extends Model {
 	
 	public Player addPreTrain(Date date, String answer, boolean isComplete) {
 		
-		PreTrain preTrain = new PreTrain(this, date, answer, isComplete);
+		PreTrain preTrain = new PreTrain(this, date, "", false, isComplete);
 		this.preTrain.add(preTrain);
 		this.save();
 		return this;
 	}
 	
-	public Player addPostTrain(Date date, String answer, boolean isComplete) {
+	public Player addPostTrain(Date date, String comment, boolean outOfRange, boolean isComplete) {
 		
-		PostTrain postTrain = new PostTrain(this, date, answer, isComplete);
+		PostTrain postTrain = new PostTrain(this, date, comment, outOfRange, isComplete);
 		this.postTrain.add(postTrain);
 		this.save();
 		return this;
@@ -86,12 +91,14 @@ public class Player extends Model {
 	
 	public Player previous() {
 
-		return Player.find("select distinct p from Player p where p.coach=?1 AND p.playernumber < ?2 order by playernumber desc", this.coach, playernumber).first();
+		return Player.find("select distinct p from Player p where p.coach=?1 AND p.playernumber < ?2 AND p.categories.size > ?3 order by playernumber desc", this.coach, playernumber, 0).first();
 		
 	}
 	 
 	public Player next() {
-	    return Player.find("select distinct p from Player p where p.coach=?1 AND p.playernumber > ?2 order by playernumber asc", this.coach, playernumber).first();
+		
+		
+	    return Player.find("select distinct p from Player p where p.coach=?1 AND p.playernumber > ?2 AND p.categories.size > ?3 order by playernumber asc", this.coach, playernumber, 0).first();
 	}
 	
 	
@@ -138,6 +145,11 @@ public class Player extends Model {
 	    return Player.find(
 	            "select distinct p from Player p join p.categories as t where t.name in (:categories) group by p.id, p.playername, p.coach having count(t.id) = :size"
 	    ).bind("categories", categories).bind("size", categories.length).fetch();
+	}
+	
+	public Player questionItWith(String q){
+		questions.add(Question.findOrCreateByName(q));
+		return this;
 	}
 	
 	public String toString() {

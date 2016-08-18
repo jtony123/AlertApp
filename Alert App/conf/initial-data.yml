@@ -18,6 +18,12 @@ Category(onloan):
     
 Category(sold):
     name:           Sold
+    
+Question(q1):
+    question:       How do you feel now
+    
+Question(q2):
+    question:       How did you sleep last night
 
 
 Client(bob):
@@ -46,6 +52,10 @@ Player(player1):
         - all
         - ateam
         - injured
+  questions:
+        - q1
+        - q2    
+   
         
 Player(player2):
   playername: Nelson Riemann
@@ -56,6 +66,9 @@ Player(player2):
         - all
         - ateam
         - onloan
+  questions:
+        - q1
+        - q2
   
 Player(player3):
   playername: Melvin Meriwether
@@ -66,6 +79,9 @@ Player(player3):
         - all 
         - bteam
         - onloan
+  questions:
+        - q1
+        - q2
         
         
 Player(player4):

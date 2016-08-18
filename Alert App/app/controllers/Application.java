@@ -25,7 +25,9 @@ public class Application extends Controller {
 
     public static void index() {
     	System.out.println("application.index method called");
-    	List<Player> players = Player.find("byCoach", connectedClient).fetch();
+    	//List<Player> players = Player.find("byCoach", connectedClient).fetch();
+    	List<Player> players = Player.findClientsPlayersCategorisedWith(connectedClient, "All");
+    	
     	List<Category> categories = Category.findAll();
     	
     	Date preTraindeadline = new Date();
@@ -82,7 +84,6 @@ public class Application extends Controller {
     
     public static void show(int playernumber) {
     	
-        	System.out.println("show method with id="+playernumber);
             Player player = Player.find("byPlayernumber", playernumber).first();
             //List<Player> players = Player.find("byCoach", connectedClient).fetch();
             

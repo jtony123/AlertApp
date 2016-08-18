@@ -2,7 +2,7 @@
  #{if _player.gpsdata[0] != null}
 
 
-	<!-- if the players pre training is complete-->
+	<!-- if the players gps data is up to date-->
 	#{if _player.gpsdata[0].inputDate.getTime() > _pt.getTime()}
 	<div class="panel panel-default">
 		<div class="panel-heading">
@@ -17,25 +17,35 @@
 						#{if _player.gpsdata[0].tT_Time > 100} 
 						<i class="glyphicon glyphicon-flag" style="color: red;"></i> 
 						#{/if}
+						#{else} 
+						<i class="glyphicon glyphicon-flag" style="color: transparent;"></i> 
+						#{/else}
 						
 						<!-- check if any comments available -->
 					
-						#{if _player.gpsdata[0].tT_Time > 0}  
+						#{ifnot _player.gpsdata[0].comment.equals("")}  
 						<i class="glyphicon glyphicon-comment" style="color: black;"></i> 
-						#{/if}
+						#{/ifnot}
+						#{else} 
+						<i class="glyphicon glyphicon-comment" style="color: transparent;"></i> 
+						#{/else}
 					
 				</a>
 			</h4>
 		</div>
 		<div id="${_panelcollapse}" class="panel-collapse collapse">
-			<div class="panel-body">Answers given:
-				something will be here</div>
+			<div class="panel-body">Averages:
+				averages will be shown here
+			</div>
+			<div class="panel-body">Todays comments:
+				${_player.gpsdata[0].comment}
+			</div>
 		</div>
 	</div>
 	
 	#{/if}
 	
-	<!-- if the players pre training is not complete-->
+	<!-- if the players gps data is not up to date-->
 	#{else}
 	<div class="panel panel-default">
 		<div class="panel-heading">
@@ -47,21 +57,19 @@
 					<br> 
 					<i class="glyphicon glyphicon-remove"></i> 
 					
-						#{if _player.gpsdata[0].tT_Time = 0} 
-						<i class="glyphicon glyphicon-flag" style="color: red;"></i> 
-						#{/if}
+						<!-- put a transparent icon as a placeholder -->
 						
-						<!-- check if any comments available -->
-					
-						#{if _player.gpsdata[0].tT_Time = 0}  
-						<i class="glyphicon glyphicon-comment" style="color: black;"></i> 
-						#{/if}
-					
+						<i class="glyphicon glyphicon-flag" style="color: transparent;"></i> 
+
+						<!-- put a transparent icon as a placeholder -->
+					 
+						<i class="glyphicon glyphicon-comment" style="color: transparent;"></i> 
+						
 				</a>
 			</h4>
 		</div>
 		<div id="${_panelcollapse}" class="panel-collapse collapse">
-			<div class="panel-body">Questionnaire not complete</div>
+			<div class="panel-body">GPS Data not uploaded today</div>
 		</div>
 	</div>
 	#{/else}

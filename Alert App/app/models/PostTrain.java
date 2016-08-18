@@ -19,19 +19,21 @@ public class PostTrain extends Model {
 	@Required
 	public Date inputDate;
 	
-	@Required
-	public String answer;
+	public String comment;
+	
+	public boolean outOfRange;
 	
 	@Required
 	public boolean isComplete;
 	
 	
 	
-	public PostTrain (Player player, Date postTrainDate, String answer, boolean isComplete){
+	public PostTrain (Player player, Date postTrainDate, String comment, boolean outOfRange, boolean isComplete){
 		
 		this.player = player;	
 		this.inputDate = postTrainDate;
-		this.answer = answer;
+		this.comment = comment;
+		this.outOfRange=outOfRange;
 		this.isComplete = isComplete;
 		
 	}

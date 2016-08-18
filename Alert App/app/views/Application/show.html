@@ -98,7 +98,25 @@
 
 		  <div class="tab-content">
 		    <div id="home" class="tab-pane fade in active">
-		      <h3>a list of questions</h3>
+		      <br>
+		      #{list items:player.questions, as:'q'}
+		      	
+		      	
+		      	<div class="container-fluid">
+		      	<h3>${q.question}</h3>
+					  <div class="btn-group btn-group-justified" data-toggle="buttons">
+					  
+					    #{list items:q.answers, as:'a'}
+					     <label class="btn btn-default">
+    					<input type="radio" name="options" id="option${a.id}"> 
+    					${a.answer}
+  						</label>
+		      			
+		      			#{/list}
+					  </div>
+					  <br>
+					</div>
+		      #{/list}
 		    </div>
 		    <div id="menu1" class="tab-pane fade">
 		      <h3>another list of questions</h3>
@@ -108,8 +126,7 @@
 		   </div>
 		  </div>
 </div>
-  
-  
+ 
 
   
 <!-- insert the standard footer -->

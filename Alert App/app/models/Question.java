@@ -1,0 +1,56 @@
+package models;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import play.data.validation.Required;
+import play.db.jpa.Model;
+
+@Entity
+public class Question extends Model implements Comparable<Question>{
+	
+	@Required
+	public String question;
+	
+	@OneToMany(mappedBy="question", cascade=CascadeType.ALL)
+	public List<Answer> answers;
+	
+	
+	public Question (String question){
+			
+		this.question = question;
+		this.answers = new ArrayList<Answer>();
+		
+	}
+	
+	public String toString(){
+		return question;
+	}
+	
+	public int compareTo(Question otherQuestion){
+		return question.compareTo(otherQuestion.question);
+	}
+	
+	public static Question findOrCreateByName(String q){
+		Question question = Question.find("byQuestion", q).first();
+		if(question == null){
+			question = new Question(q);
+		}
+		return question;
+	}
+	
+	public static List<Map> getCloud(){
+		List<Map> result=Question.find("select new map(t.question as question, count(p.id) as pound) from Player p join p.questions as t group by t.question order by t.question").fetch();
+		return result;
+	
+	}
+	
+
+}

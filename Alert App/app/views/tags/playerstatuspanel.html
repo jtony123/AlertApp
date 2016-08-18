@@ -5,7 +5,7 @@
  #{if _playerData[0] != null}
 
 
-	<!-- if the players pre training is complete-->
+	<!-- if the players pre/post training is complete-->
 	#{if _playerData[0].inputDate.getTime() > _pt.getTime()}
 	<div class="panel panel-default">
 		<div class="panel-heading">
@@ -18,22 +18,27 @@
 					
 					<!-- check if any flags are to be raised -->
 					
-						#{if _playerData[0].answer.equals("poor")} <i
-						class="glyphicon glyphicon-flag" style="color: red;"></i> 
+						#{if _playerData[0].outOfRange} 
+						<i class="glyphicon glyphicon-flag" style="color: red;"></i> 
 						#{/if}
-						
+						#{else}
+						<i class="glyphicon glyphicon-flag" style="color: transparent;"></i> 
+						#{/else}
 						<!-- check if any comments available -->
 					
-						#{if _playerData[0].answer.equals("poor")} <i
-						class="glyphicon glyphicon-comment" style="color: black;"></i> 
+						#{if _playerData[0].comment.equals("")} 
+						<i class="glyphicon glyphicon-comment" style="color: black;"></i> 
 						#{/if}
+						#{else}
+							<i class="glyphicon glyphicon-comment" style="color: transparent;"></i> 
+						#{/else}
 					
 				</a>
 			</h4>
 		</div>
 		<div id="${_panelcollapse}" class="panel-collapse collapse">
 			<div class="panel-body">Answers given:
-				${_playerData[0].answer}</div>
+				${_playerData[0]}</div>
 		</div>
 	</div>
 	
@@ -51,15 +56,18 @@
 					<br> 
 					<i class="glyphicon glyphicon-remove"></i> 
 					
-						#{if _playerData[0].answer.equals("poor")} 
-							<i class="glyphicon glyphicon-flag" style="color: red;"></i> 
+						#{if _playerData[0].isComplete} 
+							<i class="glyphicon glyphicon-flag" style="color: transparent;"></i> 
 						#{/if}
 						
 						<!-- check if any comments available -->
 					
-						#{if _playerData[0].answer.equals("poor")} <i
+						#{ifnot _playerData.comment.equals("")} <i
 						class="glyphicon glyphicon-comment" style="color: black;"></i> 
-						#{/if}
+						#{/ifnot}
+						#{else} 
+						<i class="glyphicon glyphicon-comment" style="color: transparent;"></i> 
+						#{/else}
 					
 				</a>
 			</h4>

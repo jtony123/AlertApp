@@ -40,21 +40,22 @@
 	  				<span>PRE</span>
 	  				<br>
 	  				<i class="glyphicon glyphicon-ok" ></i>
-	  				#{if _player.preTrain[0].answer.equals("poor")}
-	  					<i class="glyphicon glyphicon-flag" style="color:red;" data-toggle="tooltip" title="Feeling poorly!" ></i>
-	  				#{/if}
+	  				
+	  					<!-- raise a flag for any question answers out of normal range -->
+			  				#{if _player.preTrain[0].isComplete}
+			  					<i class="glyphicon glyphicon-flag" style="color:red;" ></i>
+			  				#{/if}
 	  				</a>
 	  			#{/if}
 	  			
-	  			<!-- if pre training has not been completed since 6am this morning, show red X -->
+	  			<!-- if pre training has not been completed since 6am this morning, show orange X -->
 	  			#{else}
 	  				<a href="#" class="btn btn-default" style="color: orange; font-size: 15px; vertical-align:middle;">
 	  				<span>PRE</span>
 	  				<br>
 	  				<i class="glyphicon glyphicon-remove" ></i>
-	  				#{if _player.preTrain[0].answer.equals("poor")}
-	  					<i class="glyphicon glyphicon-flag" style="color:red;" data-toggle="tooltip" title="Feeling poorly!" ></i>
-	  				#{/if}
+	  				
+		  			
 	  				</a>
 	  			#{/else}	
   			#{/if}
@@ -77,9 +78,11 @@
 		  				<span>POS </span>
 		  				<br>
 		  				<i class="glyphicon glyphicon-ok" ></i>
-		  				#{if _player.postTrain[0].answer.equals("poor")}
-	  						<i class="glyphicon glyphicon-flag" style="color:red;" data-toggle="tooltip" title="Feeling poorly!" ></i>
-	  					#{/if}
+		  				
+		  				<!-- raise a flag for any question answers out of normal range -->
+			  				#{if _player.postTrain[0].isComplete}
+		  						<i class="glyphicon glyphicon-flag" style="color:red;"></i>
+		  					#{/if}
 		  				</a>
 		  			#{/if}
 	  			
@@ -89,9 +92,6 @@
 		  				<span>POS</span>
 		  				<br>
 		  				<i class="glyphicon glyphicon-remove" ></i>
-			  				#{if _player.preTrain[0].answer.equals("poor")}
-			  					<i class="glyphicon glyphicon-flag" style="color:red;" data-toggle="tooltip" title="Feeling poorly!" ></i>
-			  				#{/if}
 		  				</a>
 	  				#{/else}	
   				#{/if}
@@ -106,7 +106,7 @@
   				
   				
   				
-  				<!-- check if players GPS data is upti date and has any alerts showing -->
+  				<!-- check if players GPS data is up to date and has any alerts showing -->
   				
   				#{if _player.gpsdata[0] != null}
   				
@@ -116,8 +116,10 @@
 		  				<span>GPS</span>
 		  				<br>
 		  				<i class="glyphicon glyphicon-ok" ></i>
+		  				
+		  				<!-- raise a flag if data out of normal range -->
 		  				#{if _player.gpsdata[0].tT_Time < 20}
-	  						<i class="glyphicon glyphicon-flag" style="color:red;" data-toggle="tooltip" title="Very low training time!" ></i>
+	  						<i class="glyphicon glyphicon-flag" style="color:red;"></i>
 	  					#{/if}
 		  				</a>
 		  			#{/if}

@@ -76,8 +76,8 @@ public class BasicTest extends UnitTest {
 	    Player player = new Player("Alice", 1, null, bob).save();
 	 
 	    // create player gps data
-	    new GPSData(player, 10, new Date(), 100).save();
-	    new GPSData(player, 10, new Date(), 200).save();
+	    new GPSData(player, 10, new Date(), "", 100).save();
+	    new GPSData(player, 10, new Date(), "", 200).save();
 	 
 	    // Retrieve all gps data
 	    List<GPSData> bobPlayerGPS = GPSData.find("byPlayer", player).fetch();
