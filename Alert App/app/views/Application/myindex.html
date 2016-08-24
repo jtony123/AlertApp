@@ -1,0 +1,245 @@
+#{extends 'main.html' /} #{set title:'New_Dashboard' /}
+
+<!-- insert the standard nav bar -->
+#{navigationbar client:client, active:active, categories:categories/}
+
+
+<div class="container-fluid">
+
+	        <div>
+				#{list items:categories, as:'cat'}
+					#{if category.equals(cat.name)}
+	           			<a href="@{Application.myindex(player.playernumber, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a>
+	       			#{/if}
+	       			#{else}
+	       				<a href="@{Application.myindex(player.playernumber, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a>
+	       			#{/else}
+       			#{/list}
+			</div>
+
+<div class="row">
+  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
+  
+  <div class="btn-group btn-group-justified">
+   				
+   #{if players.size() > 5}				
+   				<a href="@{Application.myindex(players[(playerIndex - 4) % players.size()].playernumber, category)}" class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
+					<div >
+				
+					</div>
+					<div class="text-nowrap" style="text-align: center;">
+						<<
+					</div>
+				</a>
+	#{/if}
+  #{if players.size() > 5}
+  #{player_icon_small player:players[(playerIndex - 3) % players.size()], category:category/}
+  #{/if}
+  #{if players.size() > 3}
+  #{player_icon_small player:players[(playerIndex - 2) % players.size()], category:category/}
+  #{/if}
+  #{if players.size() > 1}
+  #{player_icon_small player:players[(playerIndex - 1) % players.size()], category:category/}
+  #{/if}		
+  </div>
+  </div>
+  
+  
+  
+  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"><p class="text-center"></p>
+  			<h4 style="margin-bottom: 5px; margin-top:5px;">
+				<a href="@{Application.myindex(player.playernumber, category)}" class="thumbnail" style="margin-bottom: 0px;">
+					<div >
+					#{if player.playerPhoto.exists()}
+					<img class="img-responsive" src="@{Application.playerPhoto(player.id)}" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
+					#{/if}
+					#{else}
+					<img class="img-responsive" src="@{'public/images/player-headshot.png'}" alt=${player.playername} style="margin: 0 auto; max-width:150px;height:150px"/>
+					#{/else}
+					
+					</div>
+					<div class="text-nowrap" style="text-align: center;">
+						${player.playername}
+						
+					</div>
+					
+				</a>
+				<div class="text-center">
+				#{list items:player.categories, as:'cat'}
+					#{if category.equals(cat.name)}
+	           			<a href="@{Application.myindex(player.playernumber, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a>
+	       			#{/if}
+	       			#{else}
+	       				<a href="@{Application.myindex(player.playernumber, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a>
+	       			#{/else}
+       			#{/list}
+			</div>
+			</h4>
+			
+  </div>
+  
+  
+  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
+ 
+ 	<div class="btn-group btn-group-justified">
+ 		
+#{if players.size() > 2}
+#{player_icon_small player:players[(playerIndex + 1) % players.size()], category:category/}
+#{/if}
+#{if players.size() > 4}
+#{player_icon_small player:players[(playerIndex + 2) % players.size()], category:category/}
+#{/if}
+#{if players.size() > 6}
+#{player_icon_small player:players[(playerIndex + 3) % players.size()], category:category/}
+#{/if}
+#{if players.size() > 6}
+
+
+				
+				<a href="@{Application.myindex(players[(playerIndex + 4) % players.size()].playernumber, category)}" class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
+					
+					<div class="text-nowrap" style="text-align: center;">
+						>>
+						
+					</div>
+					
+				</a>
+#{/if}
+ 	</div>
+ 	
+  </div>
+</div>
+
+</div>
+
+<!-- the panel below the pagination carousel -->
+<div class="container-fluid">
+
+<script type="text/javascript">
+
+
+        
+        //Width and height
+        var w = 600;
+        var h = 250;
+        var padding = 1;
+
+        var dataset =[];
+        
+        #{list items:player.gpsdata, as:'gps'}
+        dataset.push(${gps.tT_Time});
+ 		#{/list}       
+
+
+        var xScale = d3.scale.ordinal()
+                .domain(d3.range(dataset.length))
+                .rangeRoundBands([0, w], 0.05);
+
+
+       var yScale = d3.scale.linear()
+                            .domain([0, d3.max(dataset)])
+                            .range([0, h]);
+
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
+
+            svg.selectAll("rect")
+               .data(dataset)
+               .enter()
+               .append("rect")
+               .attr("x", function(d, i) {
+                    return xScale(i);
+               })
+               .attr("y", function(d) {
+                    return h - yScale(d);
+               })
+               .attr("width", xScale.rangeBand())
+               .attr("height", function(d) {
+                    return yScale(d);
+               })
+               .attr("fill", function(d) {
+                    return "rgb(0, 0, " + (d * 10) + ")";
+               });
+
+           svg.selectAll("text")
+               .data(dataset)
+               .enter()
+               .append("text")
+               .text(function(d) {
+                    return d;
+               })
+               .attr("text-anchor", "middle")
+               .attr("x", function(d, i) {
+                    return xScale(i) + xScale.rangeBand() / 2;
+               })
+               .attr("y", function(d) {
+                    return h - yScale(d) + 14;
+               })
+               .attr("font-family", "sans-serif")
+               .attr("font-size", "11px")
+               .attr("fill", "white");
+
+
+
+           d3.selectAll("p")
+           .on("click", function() {
+               //New values for dataset
+               console.log("clicked");
+
+               var numValues = dataset.length;               //Count original length of dataset
+               dataset = [];                                       //Initialize empty array
+               for (var i = 0; i < numValues; i++) {               //Loop numValues times
+                   var newNumber = Math.floor(Math.random() * 25); //New random integer (0-24)
+                   dataset.push(newNumber);                        //Add new number to array
+               }
+
+               yScale.domain([0, d3.max(dataset)]);
+               //Update all rects
+               svg.selectAll("rect")
+                  .data(dataset)
+                  .transition()
+                  .delay(function(d, i) {
+                       return i / dataset.length * 1000;
+                   })
+                  .duration(500)
+                  .ease("elastic")
+                  .attr("y", function(d) {
+                       return h - yScale(d);
+                  })
+                  .attr("height", function(d) {
+                       return yScale(d);
+                  })
+                  .attr("fill", function(d) {
+                   return "rgb(0, 0, " + (d * 10) + ")";
+                   });
+               svg.selectAll("text")
+                  .data(dataset)
+                  .transition()
+                  .delay(function(d, i) {
+                       return i / dataset.length * 1000;
+                   })
+                  .duration(500)
+                  .ease("elastic")
+                  .text(function(d) {
+                       return d;
+                  })
+                  .attr("x", function(d, i) {
+                       return xScale(i) + xScale.rangeBand() / 2;
+                  })
+                  .attr("y", function(d) {
+                       return h - yScale(d) + 14;
+                  });
+
+           
+           });
+
+        </script>
+
+
+</div>
+
+
+
+

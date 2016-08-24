@@ -23,10 +23,17 @@ public class Question extends Model implements Comparable<Question>{
 	public List<Answer> answers;
 	
 	
-	public Question (String question){
+	// decide how many answers will be offered for this question
+	// with each subsequent answer given an integer value starting at 1 ascending
+	// and decide at which point a flag should be raised
+	public int flagThreshold;
+	
+	
+	public Question (String question, int flagThreshold){
 			
 		this.question = question;
 		this.answers = new ArrayList<Answer>();
+		this.flagThreshold = flagThreshold;
 		
 	}
 	
@@ -38,13 +45,13 @@ public class Question extends Model implements Comparable<Question>{
 		return question.compareTo(otherQuestion.question);
 	}
 	
-	public static Question findOrCreateByName(String q){
-		Question question = Question.find("byQuestion", q).first();
-		if(question == null){
-			question = new Question(q);
-		}
-		return question;
-	}
+//	public static Question findOrCreateByName(String q){
+//		Question question = Question.find("byQuestion", q).first();
+//		if(question == null){
+//			question = new Question(q, 0);
+//		}
+//		return question;
+//	}
 	
 	public static List<Map> getCloud(){
 		List<Map> result=Question.find("select new map(t.question as question, count(p.id) as pound) from Player p join p.questions as t group by t.question order by t.question").fetch();

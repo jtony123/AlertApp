@@ -15,13 +15,22 @@ public class Answer extends Model {
 	@ManyToOne
 	public Question question;
 	
+	@ManyToOne
+	public PreTrain preTrain;
+	
 	@Required
 	public String answer;
 	
-	public Answer (Question question, String answer){
+	@Required
+	public int answerValue;
+	
+	public boolean raiseFlag;
+	
+	public Answer (Question question, String answer, int answerValue){
 		
 		this.question = question;	
 		this.answer = answer;
+		this.answerValue=answerValue;
 		
 	}
 }

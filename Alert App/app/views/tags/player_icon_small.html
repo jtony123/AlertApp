@@ -1,0 +1,20 @@
+*{ Display the player icon in the pagination at tthe the top of the myindex page }*
+
+<a href="@{Application.myindex(_player.playernumber, _category)}" class="btn btn-default" style="margin-bottom: 0px; border:none;">
+	<div >
+	
+	#{if _player.playerPhoto.exists()}
+	
+		<img class="img-responsive" src="@{Application.playerPhoto(_player.id)}" alt="" style="margin: 0 auto; max-width:150px;height:100px"/>
+	#{/if}
+	#{else}
+	
+		<img class="img-responsive" src="@{'public/images/player-headshot.png'}" alt=${_player.playername} style="margin: 0 auto; max-width:150px;height:100px"/>
+	#{/else}
+					
+	</div>
+	<div class="text-nowrap" style="text-align: center;">
+		${_player.playername}
+		
+	</div>
+</a>

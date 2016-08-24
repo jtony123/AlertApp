@@ -76,8 +76,8 @@ public class BasicTest extends UnitTest {
 	    Player player = new Player("Alice", 1, null, bob).save();
 	 
 	    // create player gps data
-	    new GPSData(player, 10, new Date(), "", 100).save();
-	    new GPSData(player, 10, new Date(), "", 200).save();
+	    new GPSData(player).save();
+	    new GPSData(player).save();
 	 
 	    // Retrieve all gps data
 	    List<GPSData> bobPlayerGPS = GPSData.find("byPlayer", player).fetch();
@@ -87,15 +87,9 @@ public class BasicTest extends UnitTest {
 	 
 	    GPSData firstData = bobPlayerGPS.get(0);
 	    assertNotNull(firstData);
-	    assertEquals(10, firstData.playerIdentityNo);
-	    assertEquals(100, firstData.tT_Time);
-	    assertNotNull(firstData.inputDate);
 	 
 	    GPSData secondDataPoint = bobPlayerGPS.get(1);
 	    assertNotNull(secondDataPoint);
-	    assertEquals(10, secondDataPoint.playerIdentityNo);
-	    assertEquals(200, secondDataPoint.tT_Time);
-	    assertNotNull(secondDataPoint.inputDate);
 	}
 	
 	
@@ -109,9 +103,9 @@ public class BasicTest extends UnitTest {
 	    // Create a new player
 	    Player player = new Player("Alice", 10, null, bob).save();
 	 
-	    // add some gps data
-	    player.addGPSData(new Date(), 101);
-	    player.addGPSData(new Date(10), 201);
+//	    // add some gps data
+//	    player.addGPSData();
+//	    player.addGPSData();
 	 
 	    // Count things
 	    assertEquals(1, Client.count());
@@ -124,7 +118,6 @@ public class BasicTest extends UnitTest {
 	 
 	    // Navigate to gpsdata
 	    assertEquals(2, player.gpsdata.size());
-	    assertEquals(10, player.gpsdata.get(0).playerIdentityNo);
 	    
 	    // Delete the player
 	    player.delete();
@@ -171,7 +164,7 @@ public class BasicTest extends UnitTest {
 	    assertEquals(2, frontPlayer.gpsdata.size());
 	 
 	    // add new gpsdata for a player
-	    frontPlayer.addGPSData(new Date(), 300);
+	    //frontPlayer.addGPSData();
 	    assertEquals(3, frontPlayer.gpsdata.size());
 	    assertEquals(4, GPSData.count());
 	}

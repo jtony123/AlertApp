@@ -1,0 +1,25 @@
+#{extends 'main.html' /} #{set title:'Load data' /}
+
+ 
+<h3>Load a new csv file</h3>
+ 
+#{form @Application.saveCSV()}
+ 
+    #{ifErrors}
+        <p class="error">
+            Please correct these errors.
+        </p>
+    #{/ifErrors}
+     
+    <p>
+        <label>Path to file:</label>
+        <input type="text" name="filepath" id="filepath"/>
+    
+    </p>
+ 
+    
+    <p>
+        <input type="submit" value="Load this file" />
+    </p>
+    
+#{/form}

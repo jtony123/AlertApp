@@ -13,25 +13,29 @@ public class GPSData extends Model {
 	@ManyToOne
 	public Player player;
 	
-	@Required
-	public int playerIdentityNo;
-	
-	@Required
 	public Date inputDate;
+	
+	public int dayNumber;
 	
 	public String comment;
 	
-	@Required
 	public int tT_Time;
+	public int tT_Distance;
+	public int tHigh_Intensity_Distance;
 	
-	public GPSData (Player player, int playerId, Date dataDate, String comment, int tttime){
+	public GPSData (Player player){
 		
 		this.player = player;
-		this.playerIdentityNo = playerId;
-		this.inputDate = dataDate;
-		this.comment=comment;
-		this.tT_Time = tttime;
 		
+	}
+	
+	public void addGPSData(Date inputDate, int dayNumber, int tT_Time, int tT_Distance, int tHigh_Intensity_Distance){
+		this.inputDate=inputDate;
+		this.dayNumber=dayNumber;
+		this.tT_Time=tT_Time;
+		this.tT_Distance=tT_Distance;
+		this.tHigh_Intensity_Distance=tHigh_Intensity_Distance;
+		this.save();
 	}
 	
 	public String toString() {

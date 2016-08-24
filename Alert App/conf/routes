@@ -25,6 +25,14 @@ GET		/players/{cat}							Application.listCategory
 GET     /admin/?                                Admin.index
 *       /admin                                  module:crud
 
+
+GET		/pre									Application.preQuestionForm
+POST	/pre									Application.savePreTrain
+
+GET		/readCSV								Application.readCSV
+POST	/saveCSV								Application.saveCSV
+
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 

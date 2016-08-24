@@ -31,10 +31,11 @@
 			<div class="btn-group btn-group-justified">
 			
 			<!-- check if player pre training has been completed -->
-			#{if _player.preTrain[0] != null}
+			#{if _player.preTrain.size() > 0}
 			
 				<!-- if pre training was completed since 6am this morning -->
-				#{if _player.preTrain[0].inputDate.getTime() > 
+				
+				#{if _player.preTrain.get(_player.preTrain.size() -1).inputDate.getTime() > 
 				_preTraindeadline.getTime()}
 	  				<a href="#" class="btn btn-default" style="color: green; font-size: 15px; vertical-align:middle;">
 	  				<span>PRE</span>
@@ -42,7 +43,7 @@
 	  				<i class="glyphicon glyphicon-ok" ></i>
 	  				
 	  					<!-- raise a flag for any question answers out of normal range -->
-			  				#{if _player.preTrain[0].isComplete}
+			  				#{if _player.preTrain.get(_player.preTrain.size() -1).outOfRange}
 			  					<i class="glyphicon glyphicon-flag" style="color:red;" ></i>
 			  				#{/if}
 	  				</a>

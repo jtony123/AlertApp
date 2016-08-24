@@ -86,7 +86,9 @@
 		</div>
 		</div>
 		
-		
+
+
+
 		<!-- the questionnaire tabs -->
 <div class="container-fluid">
 
@@ -99,24 +101,34 @@
 		  <div class="tab-content">
 		    <div id="home" class="tab-pane fade in active">
 		      <br>
+		      
+		      <!-- the list of questions and answers -->
+		      #{form @Application.savePreTrain(player.playernumber)}
+		      ${player.questions}
 		      #{list items:player.questions, as:'q'}
-		      	
-		      	
+		      	<!-- question 1 -->
 		      	<div class="container-fluid">
 		      	<h3>${q.question}</h3>
 					  <div class="btn-group btn-group-justified" data-toggle="buttons">
-					  
+					  #{field 'answer'}
 					    #{list items:q.answers, as:'a'}
-					     <label class="btn btn-default">
-    					<input type="radio" name="options" id="option${a.id}"> 
-    					${a.answer}
-  						</label>
+					    
+						    <label class="btn btn-default">
+	    						<input type="radio" name="an${a}" value="${a.id}"> 
+	    						${a.answer}
+	  						</label>
 		      			
 		      			#{/list}
+		      			#{/field}
 					  </div>
 					  <br>
 					</div>
+					
 		      #{/list}
+		      
+		      <!-- the submit button -->
+		      <button class="btn btn-lg btn-primary btn-block" type="submit">Save answers</button>
+		      #{/form}
 		    </div>
 		    <div id="menu1" class="tab-pane fade">
 		      <h3>another list of questions</h3>
@@ -126,6 +138,7 @@
 		   </div>
 		  </div>
 </div>
+
  
 
   
