@@ -1,10 +1,12 @@
 package controllers;
 
 import play.*;
+import play.cache.Cache;
 import play.db.jpa.Blob;
 import play.mvc.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import models.*;
@@ -153,14 +155,14 @@ public class Application extends Controller {
  
     }
     
-    public static void addPlayer(Long id, Blob photo) {
-    	Player player = Player.findById(id);
-    	player.updatePhoto(photo);
-    	System.out.println(player.playername + " found, photo id= ");
-    	System.out.println(photo.get().toString());
-    	
-    	   index();
-    	}
+//    public static void addPlayer(Long id, Blob photo) {
+//    	Player player = Player.findById(id);
+//    	player.updatePhoto(photo);
+//    	System.out.println(player.playername + " found, photo id= ");
+//    	System.out.println(photo.get().toString());
+//    	
+//    	   index();
+//    	}
     
     public static void preQuestionForm(){
     	render();
@@ -183,10 +185,16 @@ public class Application extends Controller {
     }
     
     public static void readCSV(){
-    	
-    	
+    
     	render();
     }
+    
+ public static void getCSV(int playerNumber){
+	 System.out.println(playerNumber);
+	 //renderBinary(Play.getFile("public/javascripts/"+filename+".csv"));
+	 
+	 renderBinary(Play.getFile("data/GraphCSVFiles/player"+playerNumber+".csv"));
+ }
     
  public static void saveCSV(String filepath){
     	System.out.println("filepath found = "+filepath);
