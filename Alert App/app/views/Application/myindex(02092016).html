@@ -1,85 +1,23 @@
 #{extends 'main.html' /} #{set title:'New_Dashboard' /}
 
-<div class="container-fluid" id="outer_container">
-
 <!-- insert the standard nav bar -->
 #{navigationbar client:client, active:active, categories:categories/}
-	
-<style> 
-
-body {
-	font:12px Arial;
-}
 
 
-.chart_centre {
-	
-}
+<div class="container-fluid">
 
-path {
-	stroke: steelblue;
+	        <div>
+				#{list items:categories, as:'cat'}
+					#{if category.equals(cat.name)}
+	           			<a href="@{Application.myindex(player.playernumber, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a>
+	       			#{/if}
+	       			#{else}
+	       				<a href="@{Application.myindex(player.playernumber, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a>
+	       			#{/else}
+       			#{/list}
+			</div>
 
-	/* the width of the plotted line */
-	/* stroke-width: 0.1; */
-
-	fill: lightblue;
-}
-
-.area {
-	fill : lightblue;
-	stroke-width: 0;
-}
-
-
-.axis path, 
-.axis line {
-	fill: none;
-	stroke: grey;
-	stroke-width: 0;
-	shape-rendering: crispEdges;
-}
-
-/* the styling of the grid lines on the graph */
-.grid .tick {
-    stroke: lightgrey;
-    stroke-opacity: 0.7;
-    shape-rendering: crispEdges;
-}
-.grid path {
-   	stroke-width: 0;
-}
-
-.legend {
-	font-size: 16px;         
-	font-weight: bold;         
-	text-anchor: start;
-	stroke-width: 2;
-	shape-rendering: crispEdges;
-}
-
-.brush .extent {
-  stroke: #fff;
-  fill-opacity: .125;
-  shape-rendering: crispEdges;
-}
-
-
-</style>
-
-<div class="container-fluid" id="groupings_toggle_buttons">
-	<div>
-		#{list items:categories, as:'cat'}
-			#{if category.equals(cat.name)}
-	         			<a href="@{Application.myindex(player.playernumber, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a>
-	     	#{/if}
-   			#{else}
-   				<a href="@{Application.myindex(player.playernumber, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a>
-   			#{/else}
-	    #{/list}
-	</div>
-</div>
-
-<div class="row" id ="player_carousel">
+<div class="row">
 	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
 	  
 	  <div class="btn-group btn-group-justified">
@@ -167,54 +105,90 @@ path {
 	 	</div>
 	 	
 	  </div>
-</div><!-- end div player carousel -->
-
+	</div>
+	
+	</div>
 	
 	<!-- the panel below the pagination carousel -->
 	
-
-
-
-<div class="chart" class="container-fluid" id="main_chart" >
-	<div class="chart_upper" class="row" id="chart_upper" >
 	
-	</div>
-	<div class="chart_centre" class="row" id="chart_centre">
-	
-	</div>
-	<div class="chart_lower" class="row" id="chart_lower">
-		
-	</div>
+<style> 
 
-</div>
-	
+body {
+	font:12px Arial;
+}
 
+path {
+	stroke: steelblue;
+
+	/* the width of the plotted line */
+	/* stroke-width: 0.1; */
+
+	fill: lightblue;
+}
+
+.area {
+	fill : lightblue;
+	stroke-width: 0;
+}
+
+
+.axis path, 
+.axis line {
+	fill: none;
+	stroke: grey;
+	stroke-width: 2;
+	shape-rendering: crispEdges;
+}
+
+/* the styling of the grid lines on the graph */
+.grid .tick {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+.grid path {
+   	stroke-width: 0;
+}
+
+.legend {
+	font-size: 16px;         
+	font-weight: bold;         
+	text-anchor: start;
+	stroke-width: 2;
+	shape-rendering: crispEdges;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+
+</style>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-sm-12">
+			<div id="chart" class="chart"></div>
+		</div>
+	</div>
 	
 </div>
 
 
 <script>
 
-var windowHeight = window.innerHeight|| e.clientHeight|| g.clientHeight;
-var windowWidth;
-
 // set the dimensions of the canvas / graph
-var margin = {top: 30, right: 20, bottom: 30, left: 20};
+var margin = {top: 30, right: 20, bottom: 100, left: 50};
 
 //var	width = 1200 - margin.left - margin.right;
-var width = parseInt(d3.select('#main_chart').style('width'), 10);
-	//width = width - margin.left - margin.right;// - (margin.left + margin.right);
-	
+var width = parseInt(d3.select('#chart').style('width'), 10);
+	width = width - margin.left - margin.right;
 
 
-var	navbarh = windowHeight/16,
-	toggle1_h = windowHeight/16,
-	carousel_h = windowHeight/8,
-	toggle2_h = Math.max(((windowHeight/32)), 30)
-	//toggle2_h = windowHeight/8,
-	chart_h = Math.max(((windowHeight/2)  - margin.top - margin.bottom), 500),
-	toggle3_h = Math.max(((windowHeight/32)), 30);
-
+var	height = 650 - margin.top - margin.bottom;
 
 
 // function to parse the date time
@@ -222,7 +196,7 @@ var parseDate = d3.time.format("%Y%m%d").parse;
 
 // set the ranges
 var xScale = d3.time.scale().range([0, width]);
-var y = d3.scale.linear().range([chart_h-20, 0]);
+var y = d3.scale.linear().range([height, 0]);
 
 
 
@@ -231,7 +205,7 @@ var xAxis = d3.svg.axis().scale(xScale)
 	.orient("bottom").ticks(8).tickFormat(d3.time.format("%b-%d"));
 	
 var yAxis = d3.svg.axis().scale(y)
-	.orient("right").ticks(5);
+	.orient("left").ticks(5);
 	
 
 // define the lines
@@ -250,7 +224,7 @@ var acuteloadline = d3.svg.line()
 var chronicloadarea = d3.svg.area()
 	.interpolate("basis")
 	.x(function(d) { return xScale(d.date); })
-	.y0(chart_h)
+	.y0(height)
 	.y1(function(d) { return y(d.CHRONIC_LOAD); });
 	
 var accdecloadline = d3.svg.line()
@@ -278,63 +252,21 @@ var sleepline = d3.svg.line()
 	.x(function(d) { return xScale(d.date); })
 	.y(function(d) { return y(d.T_HEART_RATE_EXERTION); });
  
-
- var uppersvg = d3.select('#chart_upper').classed('chart_upper', true)
- .append("svg")
-		.attr("id", "uppersvg")
-		.attr("width", width)
-		.attr("height", toggle2_h)
-		//.style("background-color", "#F5F1F1")
- 	.append("g")
- 		.attr("transform", "translate(" + (2*margin.left) + ", " + 5 + ")");
  
  
 // Adds the svg canvas
-var svg = d3.select('#chart_centre').classed('chart_centre', true)
-
+var svg = d3.select('#chart').classed('chart', true)
 	.append("svg")
-		.attr("id", "outersvg")
-		.attr("width", width)
-		.attr("height", chart_h);
-		//.style("background-color", "yellow")
- 	//.append("g");
- 		//.attr("transform", "translate(" + (margin.left) + ", " + margin.top + ")");
- 		
-	svg.append("g")
-		.attr("transform", "translate(" + 20 + ", " + 0 + ")")
-		.append("rect")
-		    .attr("width", width - 40)
-	 	    .attr("height", chart_h)
-	 	    .attr("rx", 20)
-	 	    .attr("ry", 20)
-		    .attr("id", "background_shading")
-		    .attr("stroke", "#FAFAFA")
-		    .attr("stroke-width", 2)
-		    .style("fill", "#FBFBFB");
-	
- 		
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+		.style("background-color", "#F5F1F1")
+	.append("g")
+		.attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 		
 // the innersvg prevents data being plotted outside the graph area - same as clipping rect
-var innersvg = svg.select('g')
-	.attr("transform", "translate(" + (margin.left) + ", " + 0 + ")")
-	.append("svg")
-		.attr("id", "innersvg")
-		.attr("width", width - 40)
-		.attr("height", chart_h -25);
-	
-	
-	
-var lowersvg = d3.select('#chart_lower').classed('chart_lower', true)
-		.append("svg")
-		.attr("id", "lowersvg")
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", toggle3_h)
-		//.style("background-color", "#F5F1F1")
-		.append("g")
-			.attr("transform", "translate(" + margin.left + ", " + 5 + ")");
-	
-	
-
+var innersvg = svg.append("svg")
+	.attr("width", width)
+	.attr("height", height);
 
 
 // function to draw the horizontal gridlines
@@ -342,7 +274,7 @@ function make_gridline() {
     return d3.svg.axis()
         .scale(y)
         .orient("left")
-        .ticks(5);
+        .ticks(5)
 }
 
 
@@ -366,26 +298,22 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	// the x domain is the extents of the date
 	//xScale.domain(d3.extent(data, function(d) { return d.date; }));
 	
-	// by default on start up - showing last 28 days of data
+	// by default showing last 28 days of data
 	var daysShown = 28;
 	xScale.domain([data[data.length - daysShown -1].date,
 	               data[data.length -1].date
 	               ]);
-	// the y domain starts at 0 and ends at the max value found for any of the toggled on chart lines
-// 	y.domain([0, d3.max(data, function(d) {
-// 		return Math.max(d.T_ACC_DEC_LOAD, d.T_PLAYER_LOAD, d.ACUTE_LOAD, d.CHRONIC_LOAD, d.pExertion, d.sleep, d.muscleSoreness); })]);
-	
+	// the y domain starts at 0 and ends at the max value found for sleep or muscle soreness
 	y.domain([0, d3.max(data, function(d) {
-		return Math.max(d.T_PLAYER_LOAD, d.ACUTE_LOAD, d.CHRONIC_LOAD); })]);
+		return Math.max(d.T_ACC_DEC_LOAD, d.T_PLAYER_LOAD, d.ACUTE_LOAD, d.CHRONIC_LOAD, d.pExertion, d.sleep, d.muscleSoreness); })]);
 	
 	// add the x axis
 	svg.append("g")
 		.attr("class", "x axis")
 		.attr("id", "xaxis")
-		.attr("transform", "translate(0," + (chart_h - 25) + ")")
+		.attr("transform", "translate(0," + height + ")")
 		.call(xAxis);
-	 
-
+	
 	
 	draw_chart();
 	
@@ -476,29 +404,29 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	
 	function re_draw_chart() {
 
-		innersvg.selectAll("#PlayerLoad")
+		svg.selectAll("#PlayerLoad")
 		.attr("d", playerloadline(data));
 		
-		innersvg.selectAll("#ACLoad")
+		svg.selectAll("#ACLoad")
 		.attr("d", acuteloadline(data));
 		
-		innersvg.selectAll("#ChronicLoad")
+		svg.selectAll("#ChronicLoad")
 		.attr("d", chronicloadarea(data));
 		
-		innersvg.selectAll("#ACCDECLoad")
+		svg.selectAll("#ACCDECLoad")
 		.attr("d", accdecloadline(data));
 		
-		innersvg.selectAll("#RPEScore")
+		svg.selectAll("#RPEScore")
 		.attr("d", rpescoreline(data));
 		
-		innersvg.selectAll("#Sleep")
+		svg.selectAll("#Sleep")
 			.attr("d", sleepline(data));
 	
 		// add the musclesoreness line path
-		innersvg.selectAll("#muscleSoreness")
+		svg.selectAll("#muscleSoreness")
 			.attr("d", musclesorenessline(data));
 		
-		innersvg.selectAll("#heartrate")
+		svg.selectAll("#heartrate")
 		.attr("d", heartrateline(data));
 		
 		// update the x axis
@@ -510,18 +438,17 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	var minN = d3.min(data, function (d) { return d.date; }).getTime(),
 		maxN = d3.max(data, function (d) { return d.date; }).getTime();
 	var minDate = new Date(minN - 8.64e7),
-		//maxDate = new Date(maxN + 8.64e7);
-		maxDate = new Date(maxN);
+		maxDate = new Date(maxN + 8.64e7);
 	
 	var zoom = d3.behavior.zoom()
     .x(xScale)
     .on('zoom', function() {
     	
         if (xScale.domain()[0] < minDate) {
-	    	var x = zoom.translate()[0] - xScale(minDate) + xScale.range()[0];
+	    var x = zoom.translate()[0] - xScale(minDate) + xScale.range()[0];
             zoom.translate([x, 0]);
         } else if (xScale.domain()[1] > maxDate) {
-	    	var x = zoom.translate()[0] - xScale(maxDate) + xScale.range()[1];
+	    var x = zoom.translate()[0] - xScale(maxDate) + xScale.range()[1];
             zoom.translate([x, 0]);
         }
         re_draw_chart();
@@ -530,108 +457,30 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	
     
     // add the y axis
-	innersvg.append("g")
+	svg.append("g")
 		.attr("class", "y axis")
-		.call(yAxis)
-		.attr("transform", "translate(" + 5 + ", -" + 6 + ")");
+		.call(yAxis);
     
     // horizontal gridlines
-	innersvg.append("g")			
+	svg.append("g")			
 	    .attr("class", "grid")
 	    .call(make_gridline()
 	        .tickSize(-width, 0, 0)
 	        .tickFormat("")
 	    )
-	    
-
 	  
-	// add a rectangle over the bottom half of the chart for zooming    
-	innersvg.append('rect')
-	.attr("y", chart_h/2)
+	// add a rectangle over the whole lot for zooming    
+	svg.append('rect')
 	    .attr('width', width)
-	    .attr('height', chart_h/2)
+	    .attr('height', height)
 	    .attr("opacity", 0)
 	    .call(zoom);
 	
 
 		var numButtons = 7;
+		var buttonOffset = width/(numButtons + 1);
 		
-		
-		
-		// function that draws middle(above chart) box buttons
-		function drawAuxButton(buttontext, buttonid, bordercolor, lineid, i, toggled){
-			
-			var numButtonsToggle2 = 9;
-			var buttonOffset = width/(numButtons + 1);
-
-			var abutton;
-			if(width < 1000){
-				console.log("i is "+i);
-				var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
-				var dy = i>4 ? 50 : 0;
-				abutton = uppersvg.append("g")
-				.attr("transform", "translate("+ dx + "," + dy + ")");
-			} else {
-				abutton = uppersvg.append("g")
-				.attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
-			}
-			
-			
-			abutton.append("text")
-			.attr("x", 10)             
-		    .attr("y", 15)
-		    .attr("fill", bordercolor)
-	        .text(buttontext);
-	        
-			// get the width of the text and use it to tailor the width of the rect around it
- 			var textWidth = abutton.select("text").node().getBBox().width;
-			
-			abutton.append("rect")
-		    .attr("rx", 0)
-		    .attr("ry", 10)
-		    .attr("width", textWidth + 20)
-	 	    .attr("height", 20)
-		    .attr("class", "legend")
-		    .attr("id", buttonid) 
-		    .attr("cursor", "pointer")
-		    .style("fill", "rgba(255,255,0,0.1)")
-		    .style("stroke-width", toggled ? 0 : 0)
-		    .style("stroke", toggled ? bordercolor : "grey")
-		    .style("opacity", function(d) {
-		    	this.active = toggled;
-		     	})
-		    
-		    
-		    .on("click", function(){
-		    	
-		    	var isActive;
-		        // Hide or show the line
-		        d3.select("#"+lineid)
-		        	.style("opacity", function(d) {
-		        	// Toggle the active state
-		        	this.active = !this.active;
-		        	isActive = this.active;
-			        return	this.active ? 1 : 0;
-		        })
-		        
-		        // update the buttons border
-		        d3.select("#"+buttonid)
-		        .style("stroke", isActive ? bordercolor : "grey")
-		        .style("stroke-width", isActive ? 2 : 0)
-		    	});
-			
-		} // end drawAuxButton
-		
-		drawAuxButton("CATAPULT", "Catapult_Button", "black", "", 1, true);
-		drawAuxButton("OPTOJUMP", "Optojump_Button", "black", "", 2, true);
-		drawAuxButton("BIOMARKERS", "Biomarkers_Button", "black", "", 3, true);
-		drawAuxButton("TRAVEL STRESS", "TravelStress_Button", "black", "", 4, true);
-		drawAuxButton("UTC", "Utc_Button", "black", "", 5, true);
-		drawAuxButton("VLOS", "Vlos_Button", "black", "", 6, true);
-		drawAuxButton("SPORTS VU", "SportsVu_Button", "black", "", 7, true);
-		drawAuxButton("FUSIONETICS", "Fusionetics_Button", "black", "", 8, true);
-		
-		
+// <div id="linetogglebuttons" class="legend">hello</div>
 		
 		function drawButton(buttontext, buttonid, bordercolor, lineid, i, toggled){
 			
@@ -642,18 +491,8 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
         		return toggled ? 1 : 0;
         	})
 
-			var abutton;
-			if(width < 1000){
-				console.log("i is "+i);
-				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
-				var dy = i>4 ? 50 : 0;
-				abutton = lowersvg.append("g")
-				.attr("transform", "translate("+ dx + "," + dy + ")");
-			} else {
-				abutton = lowersvg.append("g")
-				.attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
-			}
-			
+			var abutton = svg.append("g")
+			.attr("transform", "translate("+ (i * buttonOffset) + "," + (height + margin.top + 10) + ")");
 			
 			abutton.append("text")
 			.attr("x", 10)             
@@ -718,19 +557,9 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	        		this.active = toggled;
 	        		return toggled ? 1 : 0;
 	        	})
-			
-			var abutton;
-			if(width < 1000){
-				console.log("i is "+i);
-				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
-				var dy = i>4 ? 50 : 0;
-				abutton = lowersvg.append("g")
-				.attr("transform", "translate("+ dx + "," + dy + ")");
-			} else {
-				abutton = lowersvg.append("g")
-				.attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
-			}
-	        	
+
+			var abutton = svg.append("g")
+			.attr("transform", "translate("+ (i * buttonOffset) + "," + (height + margin.top + 10) + ")");
 			
 			abutton.append("text")
 			.attr("x", 10)             
@@ -791,36 +620,32 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 		} // end drawACButton
 		
 		
+		// combined a/c load button
+		drawACButton("A:C WEEK LOAD", "ACLoad_Button", "red", "ACLoad", "ChronicLoad", 1, true);
 		
-		var drawButtons = function(){
-			
-			// first remove all elements from this svg container
-			lowersvg.selectAll("g").remove();
-			//d3.selectAll("svg > *").remove();
-			// combined a/c load button
-			drawACButton("A:C WEEK LOAD", "ACLoad_Button", "red", "ACLoad", "ChronicLoad", 1, true);
-			
-			
-			// player daily load
-			drawButton("SESSION LOAD", "PlayerLoad_Button", "purple", "PlayerLoad", 2, true);
-			
-			//acc/dec load button 	
-			drawButton("ACC/DEC", "ACCDEC_Button", "blue", "ACCDECLoad", 3, false);
-				
-			// rpe score button
-			drawButton("RPE SCORES", "RPE_Button", "black", "RPEScore", 4, false);
-				
-			// sleep button
-			drawButton("SLEEP", "Sleep_Button", "steelblue", "Sleep", 5, false);
-			
-			// muscle soreness
-			drawButton("MUS SOR", "MuscleSoreness_Button", "green", "muscleSoreness", 6, false);
-			
-			// heart rate
-			drawButton("HR", "HR_Button", "orange", "heartrate", 7, false);
-		}
+		// a/c load button
+		// drawButton("ACUTE LOAD", "ACUTELoad_Button", "red", "ACLoad", 1, true);
 		
-		drawButtons();
+		// chronic load button
+		// drawButton("Chronic LOAD", "Chronic_Button", "lightblue", "ChronicLoad", 2, true);
+		
+		// player daily load
+		drawButton("SESSION LOAD", "PlayerLoad_Button", "purple", "PlayerLoad", 2, true);
+		
+		//acc/dec load button 	
+		drawButton("ACC/DEC", "ACCDEC_Button", "blue", "ACCDECLoad", 3, false);
+			
+		// rpe score button
+		drawButton("RPE SCORES", "RPE_Button", "black", "RPEScore", 4, false);
+			
+		// sleep button
+		drawButton("SLEEP", "Sleep_Button", "steelblue", "Sleep", 5, false);
+		
+		// muscle soreness
+		drawButton("MUS SOR", "MuscleSoreness_Button", "green", "muscleSoreness", 6, false);
+		
+		// heart rate
+		drawButton("HR", "HR_Button", "orange", "heartrate", 7, false);
 
 	
 	// handling window resizing
@@ -829,40 +654,20 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	function resize() {
 		//console.log("resizing");
 	    // update width
-	    width = parseInt(d3.select('#chart_centre').style('width'), 10);
-	    console.log("window width = "+width);
+	    width = parseInt(d3.select('#chart').style('width'), 10);
+	    console.log(width);
 	    width = width - margin.left - margin.right;
 	    
 	    xScale.range([0, width]);
 	    buttonOffset = width/(numButtons + 1);
-	    drawButtons();
-
+	    //redrawbuttons();
 	    re_draw_chart();
 	    
-	    //d3.selectAll("#HR_Button").exit().remove();
+	    d3.selectAll("#HR_Button").exit().remove();
 	    
 	}
 	
 });
-
-// var windowHeight = window.innerHeight|| e.clientHeight|| g.clientHeight;
-// var windowWidth;
-
-// // set the dimensions of the canvas / graph
-// var margin = {top: 30, right: 20, bottom: 30, left: 50};
-
-// //var	width = 1200 - margin.left - margin.right;
-// var width = parseInt(d3.select('#main_chart').style('width'), 10);
-// 	width = width - margin.left - margin.right;
-	
-
-
-// var	navbarh = windowHeight/16,
-// 	toggle1_h = windowHeight/16,
-// 	carousel_h = windowHeight/8,
-// 	toggle2_h = windowHeight/8,
-// 	chart_h = Math.max(((windowHeight/2)  - margin.top - margin.bottom), 500),
-// 	toggle3_h = Math.max(((windowHeight/8)  - margin.top - margin.bottom), 100);
 	
 // text label for the y axis
 //svg.append("text")

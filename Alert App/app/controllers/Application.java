@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.*;
 
 import models.*;
-import filehandling.CSVLoader;
+import utilities.CSVLoader;
 
 @With(Secure.class)
 public class Application extends Controller {
@@ -190,9 +190,7 @@ public class Application extends Controller {
     }
     
  public static void getCSV(int playerNumber){
-	 System.out.println(playerNumber);
-	 //renderBinary(Play.getFile("public/javascripts/"+filename+".csv"));
-	 
+	 System.out.println("getCSV called");
 	 renderBinary(Play.getFile("data/GraphCSVFiles/player"+playerNumber+".csv"));
  }
     
