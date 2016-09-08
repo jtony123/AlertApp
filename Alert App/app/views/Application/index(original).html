@@ -1,0 +1,29 @@
+#{extends 'main.html' /} #{set title:'Dashboard' /}
+
+<!-- insert the standard nav bar -->
+#{navigationbar client:client, active:active, categories:categories/}
+
+
+<!-- Player Grid -->
+<div class="container-fluid">
+#{if players.size()}
+
+<div class="row">
+	#{list items:players, as:'player'}
+		
+		#{playergridlayout player:player, preTraindeadline:preTraindeadline, postTraindeadline:postTraindeadline, gpsdataDeadline:gpsdataDeadline /}
+		
+	#{/list}
+</div>
+#{/if} 
+</div>
+
+<!-- insert the standard footer -->
+#{footer /}
+
+
+
+
+
+
+

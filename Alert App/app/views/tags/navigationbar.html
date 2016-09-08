@@ -4,12 +4,11 @@
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 
 <div class="container-fluid">
-	<nav class="navbar navbar-inverse navbar-fixed-top">
+	<nav class="navbar navbar-inverse navbar-fixed-top" style="background-color: #FED202;">
 
-		<div class="navbar-header">
+		<div class="navbar-header" >
 			<a class="navbar-brand" href="#"> <span> <img
-					src="@{'public/images/orreco-logo.png'}" alt="Orreco" /> nameLess
-					App
+					src="@{'public/images/orreco-logo.png'}" alt="Orreco" /> 
 			</span>
 			</a>
 		</div>
@@ -20,14 +19,6 @@
 		#{else}
 			<li><a href="@{Application.index()}">Dashboard</a></li>
 		#{/else}
-		
-		#{if _active.equals("new_dashboard")}
-			<li class="active"><a href="@{Application.myindex()}">New_Dashboard</a></li>
-		#{/if}
-		#{else}
-			<li><a href="@{Application.myindex()}">New_Dashboard</a></li>
-		#{/else}
-		
 		
 			
 			

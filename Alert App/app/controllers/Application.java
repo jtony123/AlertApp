@@ -2,15 +2,23 @@ package controllers;
 
 import play.*;
 import play.cache.Cache;
+import play.data.Upload;
 import play.db.jpa.Blob;
 import play.mvc.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.*;
+
+import org.apache.commons.io.IOUtils;
 
 import models.*;
 import utilities.CSVLoader;
+import utilities.CSVOutput;
 
 @With(Secure.class)
 public class Application extends Controller {
@@ -27,36 +35,10 @@ public class Application extends Controller {
     }
     
 
-    public static void index() {
-    	System.out.println("application.index method called");
-    	//List<Player> players = Player.find("byCoach", connectedClient).fetch();
-    	List<Player> players = Player.findClientsPlayersCategorisedWith(connectedClient, "All");
-    	
-    	List<Category> categories = Category.findAll();
-    	
-    	Date preTraindeadline = new Date();
-    	preTraindeadline.setHours(6);
-    	preTraindeadline.setMinutes(0);
-    	preTraindeadline.setSeconds(0);
-    	
-    	Date postTraindeadline = new Date();
-    	postTraindeadline.setHours(6);
-    	postTraindeadline.setMinutes(0);
-    	postTraindeadline.setSeconds(0);
-    	
-    	Date gpsdataDeadline = new Date();
-    	gpsdataDeadline.setHours(6);
-    	gpsdataDeadline.setMinutes(0);
-    	gpsdataDeadline.setSeconds(0);
-    	System.out.println(gpsdataDeadline);
-    	
-    	String active = "dashboard";
-        render(active, categories, players, preTraindeadline, postTraindeadline, gpsdataDeadline);
-    }
     
-    public static void myindex(int playernumber, String category) {
-    	System.out.println("application.myindex method called - playernumber=" +playernumber);
-    	System.out.println("Category called = " + category);
+    public static void index(int playernumber, String category) {
+    	//System.out.println("application.index method called - playernumber=" +playernumber);
+    	//System.out.println("Category called = " + category);
     	//List<Player> players = Player.find("byCoach", connectedClient).fetch();
     	List<Player> players;
     	if(category==null){
@@ -74,7 +56,8 @@ public class Application extends Controller {
     	}
 
     	int playerIndex = players.indexOf(player);
-    	System.out.println("index of player = " + playerIndex);
+    	System.out.println("file name of player = " + player.filename);
+    	
     	
     	List<Category> categories = Category.findAll();
     	
@@ -93,7 +76,7 @@ public class Application extends Controller {
     	gpsdataDeadline.setMinutes(0);
     	gpsdataDeadline.setSeconds(0);
     	
-    	String active = "new_dashboard";
+    	String active = "dashboard";
         render(active, categories, category, player, playerIndex, players, preTraindeadline, postTraindeadline, gpsdataDeadline);
     }
     
@@ -154,15 +137,7 @@ public class Application extends Controller {
     		render(active, player, preTraindeadline, postTraindeadline, gpsdataDeadline);
  
     }
-    
-//    public static void addPlayer(Long id, Blob photo) {
-//    	Player player = Player.findById(id);
-//    	player.updatePhoto(photo);
-//    	System.out.println(player.playername + " found, photo id= ");
-//    	System.out.println(photo.get().toString());
-//    	
-//    	   index();
-//    	}
+
     
     public static void preQuestionForm(){
     	render();
@@ -181,7 +156,7 @@ public class Application extends Controller {
     	} else {
     		System.out.println("no buttons selected");
     	}
-    	index();
+    	index(0, "All");
     }
     
     public static void readCSV(){
@@ -190,18 +165,48 @@ public class Application extends Controller {
     }
     
  public static void getCSV(int playerNumber){
-	 System.out.println("getCSV called");
-	 renderBinary(Play.getFile("data/GraphCSVFiles/player"+playerNumber+".csv"));
+	 Player player = Player.find("byPlayernumber", playerNumber).first();
+	 renderBinary(Play.getFile("data/attachments/" +player.filename));
+	 
+	 //renderBinary(Play.getFile("data/attachments/GraphCSVFiles/player"+playerNumber+".csv"));
  }
     
- public static void saveCSV(String filepath){
-    	System.out.println("filepath found = "+filepath);
-    	//	/Users/anthonyjackson/Desktop/AJ Licence.jpg
-    	CSVLoader cSVLoader = new CSVLoader();
-    	File file = new File(filepath);
-    	System.out.println("file exists? "+file.exists());
-    	cSVLoader.loadFile(filepath);
-    	index();
+ public static void saveCSV(int playernumber, Blob data){
+	 
+	 
+	 
+	  File file;
+	  String filename = null;
+	 // just for development
+	 if(playernumber != 0) {
+		Player player = Player.find("byPlayernumber", playernumber).first();
+	   	file = data.getFile();
+	   	player.file = data.getFile();
+	   	player.filename = file.getName();
+	   	player.save();
+	   	filename = file.getName();
+	   	System.out.println("name = " + filename);
+	   	System.out.println("saved");
+	 } else {
+		file = data.getFile();
+    	CSVLoader csvloader = new CSVLoader();
+    	csvloader.loadCSVFile(file.getAbsolutePath());//.loadFile(file.getAbsolutePath());
+    	CSVOutput output = new CSVOutput("data/attachments/GraphCSVFiles/" + file.getName());
+    	output.writeOutFile(csvloader.getHeader(), csvloader.getDatapoints());
+	 }
+	   
+	   	
+
+    	
+    	
+//    	System.out.println("file exists? "+file.exists());
+//    	cSVLoader.loadFile(filepath);
+    	
+	 
+    	
+    	
+    	
+    	index(4,"All");
     }
     
 

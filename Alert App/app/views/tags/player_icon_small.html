@@ -1,6 +1,6 @@
 *{ Display the player icon in the pagination at tthe the top of the myindex page }*
 
-<a href="@{Application.myindex(_player.playernumber, _category)}" class="btn btn-default" style="margin-bottom: 0px; border:none;">
+<a href="@{Application.index(_player.playernumber, _category)}" class="btn btn-default" style="margin-bottom: 0px; border:none;">
 	<div >
 	
 	#{if _player.playerPhoto.exists()}

@@ -1,28 +1,1086 @@
 #{extends 'main.html' /} #{set title:'Dashboard' /}
 
+<div class="container-fluid" id="outer_container" style="background-color: #FBFBFB">
+
 <!-- insert the standard nav bar -->
 #{navigationbar client:client, active:active, categories:categories/}
+	
+<style> 
+
+body {
+	font:12px Arial;
+}
 
 
-<!-- Player Grid -->
-<div class="container-fluid">
-#{if players.size()}
+.chart_centre {
+	
+}
 
-<div class="row">
-	#{list items:players, as:'player'}
-		
-		#{playergridlayout player:player, preTraindeadline:preTraindeadline, postTraindeadline:postTraindeadline, gpsdataDeadline:gpsdataDeadline /}
-		
-	#{/list}
+path {
+	stroke: steelblue;
+
+	/* the width of the plotted line */
+	/* stroke-width: 0.1; */
+
+	fill: lightblue;
+}
+
+.area {
+	fill : lightblue;
+	stroke-width: 0;
+}
+
+
+.axis path, 
+.axis line {
+	fill: none;
+	stroke: grey;
+	stroke-width: 0;
+	shape-rendering: crispEdges;
+}
+
+/* the styling of the grid lines on the graph */
+.grid .tick {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+.grid path {
+   	stroke-width: 0;
+}
+
+.legend {
+	font-size: 16px;         
+	font-weight: bold;         
+	text-anchor: start;
+	stroke-width: 2;
+	shape-rendering: crispEdges;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+div.tooltip {   
+  position: absolute;           
+  text-align: center;           
+  width: 80px;                  
+  height: 20px;                 
+  padding: 2px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: none;         
+}
+
+div.datatip {   
+  position: absolute;           
+  text-align: left;    
+  background-color: #778899;       
+  width: 150px;                  
+  height: 188px;                 
+  padding: 5px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: none;         
+}
+th, td {
+    padding: 2px;
+}
+
+#datatiptable tr:nth-child(even){
+	max-width: 100%;
+    background-color: #F0F8FF;
+}
+#datatiptable tr:nth-child(odd){
+	max-width: 100%;
+    background-color: #E6E6FA;
+}
+
+
+
+</style>
+
+<div class="container-fluid" id="groupings_toggle_buttons">
+	<div>
+		#{list items:categories, as:'cat'}
+			#{if category.equals(cat.name)}
+	         			<a href="@{Application.index(player.playernumber, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a>
+	     	#{/if}
+   			#{else}
+   				<a href="@{Application.index(player.playernumber, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a>
+   			#{/else}
+	    #{/list}
+	</div>
 </div>
-#{/if} 
+
+<div class="row" id ="player_carousel">
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
+	  
+	  <div class="btn-group btn-group-justified">
+	   				
+	   #{if players.size() > 5}				
+	   				<a href="@{Application.index(players[(playerIndex - 4) % players.size()].playernumber, category)}" class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
+						<div >
+					
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							<<
+						</div>
+					</a>
+		#{/if}
+	  #{if players.size() > 5}
+	  #{player_icon_small player:players[(playerIndex - 3) % players.size()], category:category/}
+	  #{/if}
+	  #{if players.size() > 3}
+	  #{player_icon_small player:players[(playerIndex - 2) % players.size()], category:category/}
+	  #{/if}
+	  #{if players.size() > 1}
+	  #{player_icon_small player:players[(playerIndex - 1) % players.size()], category:category/}
+	  #{/if}		
+	  </div>
+	  </div>
+	  
+	  
+	  
+	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"><p class="text-center"></p>
+	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
+					<a href="@{Application.index(player.playernumber, category)}" class="thumbnail" style="margin-bottom: 0px;">
+						<div >
+						#{if player.playerPhoto.exists()}
+						<img class="img-responsive" src="@{Application.playerPhoto(player.id)}" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
+						#{/if}
+						#{else}
+						<img class="img-responsive" src="@{'public/images/player-headshot.png'}" alt=${player.playername} style="margin: 0 auto; max-width:150px;height:150px"/>
+						#{/else}
+						
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							${player.playername}
+							
+						</div>
+						
+					</a>
+<!-- 					<div class="text-center"> -->
+<!-- 					#{list items:player.categories, as:'cat'} -->
+<!-- 						#{if category.equals(cat.name)} -->
+<!-- 		           			<a href="@{Application.index(player.playernumber, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a> -->
+<!-- 		       			#{/if} -->
+<!-- 		       			#{else} -->
+<!-- 		       				<a href="@{Application.index(player.playernumber, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a> -->
+<!-- 		       			#{/else} -->
+<!-- 	       			#{/list} -->
+<!-- 				</div> -->
+				</h4>
+				
+	  </div>
+	  
+	  
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
+	 
+	 	<div class="btn-group btn-group-justified">
+	 		
+	#{if players.size() > 2}
+	#{player_icon_small player:players[(playerIndex + 1) % players.size()], category:category/}
+	#{/if}
+	#{if players.size() > 4}
+	#{player_icon_small player:players[(playerIndex + 2) % players.size()], category:category/}
+	#{/if}
+	#{if players.size() > 6}
+	#{player_icon_small player:players[(playerIndex + 3) % players.size()], category:category/}
+	#{/if}
+	#{if players.size() > 6}
+	<a href="@{Application.index(players[(playerIndex + 4) % players.size()].playernumber, category)}" class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
+						
+			<div class="text-nowrap" style="text-align: center;">
+				>>
+				
+			</div>
+						
+	</a>
+	#{/if}
+	 	</div>
+	 	
+	  </div>
+</div><!-- end div player carousel -->
+
+	
+	<!-- the panel below the pagination carousel -->
+	
+
+
+
+<div class="chart" class="container-fluid" id="main_chart"  style="border:1px solid #cecece; border-radius: 20px;
+																	margin:20px;
+																	background-color: white;
+																	box-shadow: 0px 0px 10px grey;">
+	<div class="chart_upper" class="row" id="chart_upper" >
+	
+	</div>
+	<div class="chart_centre" class="row" id="chart_centre">
+	
+	</div>
+	<div class="chart_lower" class="row" id="chart_lower">
+		
+	</div>
+
+</div>
+	
+
+	
 </div>
 
-<!-- insert the standard footer -->
-#{footer /}
+
+<script>
+
+
+var windowHeight = window.innerHeight|| e.clientHeight|| g.clientHeight;
+
+// set the dimensions of the canvas / graph
+var margin = {top: 30, right: 20, bottom: 25, left: 20};
+
+var width = parseInt(d3.select('#main_chart').style('width'), 10);
+	
+
+
+var	navbarh = windowHeight/16,
+	toggle1_h = windowHeight/16,
+	carousel_h = windowHeight/8,
+	toggle2_h = Math.max(((windowHeight/32)), 50)
+	chart_h = Math.max(((windowHeight/2)), 400),
+	toggle3_h = Math.max(((windowHeight/32)), 50);
 
 
 
+// function to parse the date time
+var parseDate = d3.time.format("%Y%m%d").parse;
+
+// set the ranges
+var xScale = d3.time.scale().range([0, width]);
+var y = d3.scale.linear().range([chart_h-margin.bottom, 0]);
+
+
+
+// define the axes
+var xAxis = d3.svg.axis().scale(xScale)
+	.orient("bottom").ticks(8).tickFormat(d3.time.format("%b-%d"));
+	
+var yAxis = d3.svg.axis().scale(y)
+	.orient("right").ticks(5);
+	
+
+// define the lines
+var playerloadline = d3.svg.line()
+	.interpolate("cardinal")
+	//.defined(function(d) {return d.T_PLAYER_LOAD != ""; })
+	.x(function(d) { return xScale(d.date); })
+	.y(function(d) { return y(d.T_PLAYER_LOAD); });
+	
+var acuteloadline = d3.svg.line()
+	.interpolate("cardinal")
+	//.defined(function(d) {return d.T_PLAYER_LOAD != ""; })
+	.x(function(d) { return xScale(d.date); })
+	.y(function(d) { return y(d.ACUTE_LOAD); });
+	
+var chronicloadarea = d3.svg.area()
+	.interpolate("basis")
+	.x(function(d) { return xScale(d.date); })
+	.y0(chart_h)
+	.y1(function(d) { return y(d.CHRONIC_LOAD); });
+	
+var accdecloadline = d3.svg.line()
+	.interpolate("cardinal")
+	.x(function(d) { return xScale(d.date); })
+	.y(function(d) { return y(d.T_ACC_DEC_LOAD); });
+	
+var rpescoreline = d3.svg.line()
+	.interpolate("cardinal")
+	.x(function(d) { return xScale(d.date); })
+	.y(function(d) { return y(d.pExertion); });
+
+var sleepline = d3.svg.line()
+	.interpolate("cardinal")
+	.x(function(d) { return xScale(d.date); })
+	.y(function(d) { return y(d.sleep); });
+	
+ var musclesorenessline = d3.svg.line()
+ 	.interpolate("cardinal")
+ 	.x(function(d) { return xScale(d.date); })
+ 	.y(function(d) { return y(d.muscleSoreness); });
+ 
+ var heartrateline = d3.svg.line()
+	.interpolate("cardinal")
+	.x(function(d) { return xScale(d.date); })
+	.y(function(d) { return y(d.T_HEART_RATE_EXERTION); });
+ 
+
+ var uppersvg = d3.select('#chart_upper').classed('chart_upper', true)
+ .append("svg")
+		.attr("id", "uppersvg")
+		.attr("width", width)
+		.attr("height", toggle2_h)
+		//.style("background-color", "#F5F1F1")
+ 	.append("g")
+ 		// transform the y coordinate by 5 to push buttons away from top edge of container
+ 		.attr("transform", "translate(" + margin.left + ", " + 5 + ")");
+ 
+ 
+// Adds the svg canvas
+var svg = d3.select('#chart_centre').classed('chart_centre', true)
+
+	.append("svg")
+		.attr("id", "outersvg")
+		.attr("width", width)
+		.attr("height", chart_h);
+ 		
+	svg.append("g")
+		.attr("transform", "translate(" + margin.left + ", " + 0 + ")")
+		
+		.append("rect")
+		    .attr("width", width - (margin.left + margin.right))
+	 	    .attr("height", chart_h)
+	 	    .attr("rx", 20)
+	 	    .attr("ry", 20)
+		    .attr("id", "background_shading")
+		    .attr("stroke", "#FAFAFA")
+		    .attr("stroke-width", 2)
+		    .style("fill", "#FBFBFB");
+	
+ 		
+		
+// the innersvg prevents data being plotted outside the graph area - same as clipping rect
+var innersvg = svg.select('g')
+	.attr("transform", "translate(" + (margin.left) + ", " + 0 + ")")
+	.append("svg")
+		.attr("id", "innersvg")
+		.attr("width", width - (margin.left + margin.right))
+		.attr("height", chart_h - margin.bottom);
+		
+
+	
+	
+	
+var lowersvg = d3.select('#chart_lower').classed('chart_lower', true)
+		.append("svg")
+		.attr("id", "lowersvg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", toggle3_h)
+		.append("g")
+		// transform the y coordinate by 5 to push buttons away from top edge of container
+			.attr("transform", "translate(" + margin.left + ", " + 5 + ")");
+	
+	
+
+
+
+// function to draw the horizontal gridlines
+function make_gridline() {		
+    return d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(5);
+}
+
+//var formatTime = d3.time.format("%e %B");
+
+// called whenever mouse hovers over a data point
+var tooltip = d3.select("body").append("div")   
+		.attr("class", "tooltip")               
+		.style("opacity", 0);
+	
+var datatip = d3.select("body").append("div")   
+.attr("class", "datatip")               
+.style("opacity", 0);
+
+
+
+// Get the data
+
+// USE THE FOLLOWING FOR MULTIPLR PLAYER FILES **********
+
+// var filesArray = ["@{Application.getCSV(player.playernumber)}", "@{Application.getCSV(5)}"];
+// var remaining = filesArray.length;
+
+// filesArray.forEach (function(f) {
+// 	d3.csv(f, function(data) {
+		
+// 		data.forEach(function(d) {
+			
+// 	 		d.date = parseDate(d.date);
+// 	 		d.T_PLAYER_LOAD = +(d.T_PLAYER_LOAD / 100);//**************note scaling of large number
+// 	 		d.T_ACC_DEC_LOAD = +(d.T_ACC_DEC_LOAD / 100);
+// 	 		d.pExertion = +d.pExertion;
+// 	 		d.sleep = +d.sleep;
+// 	 		d.muscleSoreness = +d.muscleSoreness;
+// 	 		d.T_HEART_RATE_EXERTION = +(d.T_HEART_RATE_EXERTION / 10);
+// 	 		d.ACUTE_LOAD = +(d.ACUTE_LOAD/100);
+// 	 		d.CHRONIC_LOAD = +(d.CHRONIC_LOAD/100);	
+		
+// 	}) // end data.forEach
+	
+//})
+
+var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(error, data) {
+	data.forEach(function(d) {
+		d.date = parseDate(d.date);
+		d.T_PLAYER_LOAD = +(d.T_PLAYER_LOAD / 100);//**************note scaling of large number
+		d.T_ACC_DEC_LOAD = +(d.T_ACC_DEC_LOAD / 100);
+		d.pExertion = +d.pExertion;
+		d.sleep = +d.sleep;
+		d.muscleSoreness = +d.muscleSoreness;
+		d.T_HEART_RATE_EXERTION = +(d.T_HEART_RATE_EXERTION / 10);
+		d.ACUTE_LOAD = +(d.ACUTE_LOAD/100);
+		d.CHRONIC_LOAD = +(d.CHRONIC_LOAD/100);
+	});
+	
+	
+	// by default on start up - showing last 28 days of data
+	var daysShown = 28;
+	xScale.domain([data[data.length - daysShown -1].date,
+	               data[data.length -1].date
+	               ]);
+	
+	// at start up only 3 lines plotted, setting y axis scale for these 3
+	y.domain([0, d3.max(data, function(d) {
+		return Math.max(d.T_PLAYER_LOAD, d.ACUTE_LOAD, d.CHRONIC_LOAD); })]);
+	
+	var zoom = d3.behavior.zoom()
+	.x(xScale)
+	.on('zoom', function() {
+		
+		var minN = d3.min(data, function (d) { return d.date; }).getTime(),
+			maxN = d3.max(data, function (d) { return d.date; }).getTime();
+		
+	    if (xScale.domain()[0] < new Date(minN - 8.64e7)) {
+	    	var x = zoom.translate()[0] - xScale(new Date(minN - 8.64e7)) + xScale.range()[0];
+	        zoom.translate([x, 0]);
+	    } else if (xScale.domain()[1] > new Date(maxN)) {
+	    	var x = zoom.translate()[0] - xScale(new Date(maxN)) + xScale.range()[1];
+	        zoom.translate([x, 0]);
+	    }
+	    re_draw_chart();
+	});
+	
+	// add a rectangle over the bottom half of the chart for zooming    
+	innersvg.append('rect')
+		.attr("id", "zoomrect")
+		.attr("y", 0)
+	    .attr('width', width)
+	    .attr('height', chart_h)
+	    .attr("opacity", 0)
+	    .call(zoom);
+	
+	// add the x axis
+	svg.append("g")
+		.attr("class", "x axis")
+		.attr("id", "xaxis")
+		.attr("transform", "translate(0," + (chart_h - margin.bottom) + ")")
+		.call(xAxis);
+	 
+
+	
+	draw_chart();
+	
+	function draw_chart() {
+		
+		// add the chronic load path line
+		innersvg.append("path")
+		.attr("class", "area")
+		// assigning a unique id attribute
+		.attr("id", "ChronicLoad")
+// 		// setting the stroke width on the fly
+// 		.attr("stroke-width", 1)
+// 		.attr("stroke", "#FFDFF3")
+		.style("fill", "#AFDFF3")
+		.style("opacity",1)
+		.attr("d", chronicloadarea(data));
+		
+
+		// add the player load path line
+		innersvg.append("path")
+		.attr("class", "line")
+		// assigning a unique id attribute
+		.attr("id", "PlayerLoad")
+		// setting the stroke width on the fly
+		.attr("stroke-width", 1)
+		.style("stroke", "purple")
+		.style("fill", "none")
+		.attr("d", playerloadline(data));
+		
+
+		
+
+	    
+		// add the acute load path line
+		innersvg.append("path")
+		.attr("class", "line")
+		// assigning a unique id attribute
+		.attr("id", "ACLoad")
+		// setting the stroke width on the fly
+		.attr("stroke-width", 1)
+		.style("stroke", "red")
+		.style("fill", "none")
+		.attr("d", acuteloadline(data));
+		
+		// add the acc/dec load path line
+		innersvg.append("path")
+		.attr("class", "line")
+		// assigning a unique id attribute
+		.attr("id", "ACCDECLoad")
+		// setting the stroke width on the fly
+		.attr("stroke-width", 1)
+		.style("stroke", "blue")
+		.style("fill", "none")
+		.attr("d", accdecloadline(data));
+		
+		// add dots to the acc/dec load line
+	    innersvg.selectAll("dot")
+    	.data(data)
+  		.enter().append("circle")
+  		.attr("id", "ACCDECLoadDot")
+    	.attr("r", 2.5)
+    	.style("stroke", "blue")
+    	.style("opacity", 0)
+    	.style("fill", "#FBFBFB")
+    	.attr("cx", function(d) { return xScale(d.date); })
+    	.attr("cy", function(d) { return y(d.T_ACC_DEC_LOAD); });
+		
+		// add the rpe load path line
+		innersvg.append("path")
+		.attr("class", "line")
+		// assigning a unique id attribute
+		.attr("id", "RPEScore")
+		// setting the stroke width on the fly
+		.attr("stroke-width", 1)
+		.style("stroke", "black")
+		.style("fill", "none")
+		.attr("d", rpescoreline(data));
+		
+		// add the sleep line path
+		innersvg.append("path")
+			.attr("class", "line")
+			// assigning a unique id attribute
+			.attr("id", "Sleep")
+			// setting the stroke width on the fly
+			.attr("stroke-width", 1)
+			.style("fill", "none")
+			.attr("d", sleepline(data));
+	
+		// add the musclesoreness line path
+		innersvg.append("path")
+			.attr("id", "muscleSoreness")
+			.style("stroke", "green")
+			.style("fill", "none")
+			.attr("d", musclesorenessline(data));
+		
+		// add the heart rate line path
+		innersvg.append("path")
+			.attr("id", "heartrate")
+			.style("stroke", "orange")
+			.style("fill", "none")
+			.attr("d", heartrateline(data));
+		
+		// add dots to the player load line
+	    innersvg.selectAll("dot")
+    	.data(data)
+  		.enter().append("circle")
+  		.attr("id", "PlayerLoadDot")
+    	.attr("r", 20)
+    	.style("opacity", 0)
+    	.attr("cx", function(d) { return xScale(d.date); })
+    	.attr("cy", function(d) { return y(d.T_PLAYER_LOAD); })
+		
+		.on("mouseover", function(d) {
+			tooltip.transition()
+				.duration(200)
+				.style("opacity", 0.9)
+				.style("color", "purple")
+				.style("background", "rgba(128,0,128, 0.1)")
+				.style("border-color", "purple");
+			tooltip .html("Load : " + (d.T_PLAYER_LOAD * 100))
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY -50) + "px");
+			})
+		.on("mouseout", function(d) {       
+			tooltip.transition()        
+                .duration(500)      
+                .style("opacity", 0);
+		})
+		.on("click", function(d) {
+			// remove the tooltip
+			tooltip    
+            .style("opacity", 0);
+		
+    		datatip.transition()
+			.duration(100)
+			.style("opacity", 0.9)
+			.style("color", "#2F4F4F")
+			.style("border-color", "#778899");
+    		
+    		datatip .html("<table id='"+"datatiptable'"+"><tr><th>Data</th><th>Value</th></tr>" +
+    				"<tr><td>Acute Load</td><td>"+ (parseInt(d.ACUTE_LOAD * 100)) +"</td></tr>" +
+    				"<tr><td>Chronic Load</td><td>"+ (parseInt(d.CHRONIC_LOAD * 100)) +"</td></tr>" +
+    				"<tr><td>Player Load </td><td>"+ (parseInt(d.T_PLAYER_LOAD * 100)) +"</td></tr>" +
+    				"<tr><td>Acc/Dec Load</td><td>"+ (parseInt(d.T_ACC_DEC_LOAD * 100)) +"</td></tr>" +
+    				"<tr><td>RPE Score</td><td>"+ (parseInt(d.pExertion)) +"</td></tr>" +
+    				"<tr><td>Sleep</td><td>"+ (parseInt(d.sleep)) +"</td></tr>" +
+    				"<tr><td>Muscle Soreness</td><td>"+ (parseInt(d.muscleSoreness)) +"</td></tr>" +
+    				"<tr><td>Heart Rate Exertion</td><td>"+ (parseInt(d.T_HEART_RATE_EXERTION * 10)) +"</td></tr>" +
+    				"</table")
+    				
+			.style("left", (d3.event.pageX) + "px")
+			.style("top", (d3.event.pageY -250) + "px");
+    		
+		});
+		
+		// add dots to the Acute Load line
+	    innersvg.selectAll("dot")
+    	.data(data)
+  		.enter().append("circle")
+  		.attr("id", "ACLoadDot")
+    	.attr("r", 20)
+    	.style("opacity", 0)
+    	.attr("cx", function(d) { return xScale(d.date); })
+    	.attr("cy", function(d) { return y(d.ACUTE_LOAD); })
+    	.on("mouseover", function(d) {
+    		tooltip.transition()
+				.duration(200)
+				.style("opacity", 0.9)
+				.style("color", "red")
+				.style("background", "rgba(255,0,0, 0.1)")
+				.style("border-color", "red");
+    		tooltip .html("Acute : " + (parseInt(d.ACUTE_LOAD * 100)))
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY -50) + "px");
+			})
+		.on("mouseout", function(d) {       
+			tooltip.transition()        
+                .duration(500)      
+                .style("opacity", 0);
+		})
+		.on("click", function(d) {
+			// remove the tooltip
+			tooltip    
+            .style("opacity", 0);
+		
+    		datatip.transition()
+			.duration(100)
+			.style("opacity", 0.9)
+			.style("color", "#2F4F4F")
+			.style("border-color", "#778899");
+    		
+    		datatip .html("<table id='"+"datatiptable'"+"><tr><th>Data</th><th>Value</th></tr>" +
+    				"<tr><td>Acute Load</td><td>"+ (parseInt(d.ACUTE_LOAD * 100)) +"</td></tr>" +
+    				"<tr><td>Chronic Load</td><td>"+ (parseInt(d.CHRONIC_LOAD * 100)) +"</td></tr>" +
+    				"<tr><td>Player Load </td><td>"+ (parseInt(d.T_PLAYER_LOAD * 100)) +"</td></tr>" +
+    				"<tr><td>Acc/Dec Load</td><td>"+ (parseInt(d.T_ACC_DEC_LOAD * 100)) +"</td></tr>" +
+    				"<tr><td>RPE Score</td><td>"+ (parseInt(d.pExertion)) +"</td></tr>" +
+    				"<tr><td>Sleep</td><td>"+ (parseInt(d.sleep)) +"</td></tr>" +
+    				"<tr><td>Muscle Soreness</td><td>"+ (parseInt(d.muscleSoreness)) +"</td></tr>" +
+    				"<tr><td>Heart Rate Exertion</td><td>"+ (parseInt(d.T_HEART_RATE_EXERTION * 10)) +"</td></tr>" +
+    				"</table")
+    				
+			.style("left", (d3.event.pageX) + "px")
+			.style("top", (d3.event.pageY -250) + "px");
+    		
+		});
+	}
+	
+	
+
+	
+	
+	function re_draw_chart() {
+	
+		datatip.transition().duration(200).style("opacity", 0);
+
+		innersvg.selectAll("#PlayerLoad")
+		.attr("d", playerloadline(data));
+		
+	    innersvg.selectAll("#PlayerLoadDot")
+    	.attr("cx", function(d) { return xScale(d.date); })
+    	.attr("cy", function(d) { return y(d.T_PLAYER_LOAD); });
+		
+		innersvg.selectAll("#ACLoad")
+		.attr("d", acuteloadline(data));
+		
+	    innersvg.selectAll("#ACLoadDot")
+    	.attr("cx", function(d) { return xScale(d.date); })
+    	.attr("cy", function(d) { return y(d.ACUTE_LOAD); });
+		
+		innersvg.selectAll("#ChronicLoad")
+		.attr("d", chronicloadarea(data));
+		
+		innersvg.selectAll("#ACCDECLoad")
+		.attr("d", accdecloadline(data));
+		
+		// add dots to the acc/dec load line
+	    innersvg.selectAll("#ACCDECLoadDot")
+    	.attr("cx", function(d) { return xScale(d.date); })
+    	.attr("cy", function(d) { return y(d.T_ACC_DEC_LOAD); });
+		
+		innersvg.selectAll("#RPEScore")
+		.attr("d", rpescoreline(data));
+		
+		innersvg.selectAll("#Sleep")
+			.attr("d", sleepline(data));
+	
+		// add the musclesoreness line path
+		innersvg.selectAll("#muscleSoreness")
+			.attr("d", musclesorenessline(data));
+		
+		innersvg.selectAll("#heartrate")
+		.attr("d", heartrateline(data));
+		
+		// update the x axis
+		svg.selectAll("#xaxis")
+		.call(xAxis);
+		
+	}
+	
+
+    
+    // add the y axis
+	innersvg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis)
+		// push the y-axis to the right by 5px and upwards off the gridline by 6px
+		.attr("transform", "translate(" + 5 + ", -" + 6 + ")");
+    
+    // horizontal gridlines
+	innersvg.append("g")			
+	    .attr("class", "grid")
+	    .call(make_gridline()
+	        .tickSize(-width, 0, 0)
+	        .tickFormat("")
+	    )
+	    
+
+	  
+
+	
+
+		
+		
+		
+		
+		// function that draws middle(above chart) box buttons
+		function drawAuxButton(buttontext, buttonid, bordercolor, lineid, i, toggled){
+			
+			var numButtonsToggle2 = 9;
+			var buttonOffset = width/(numButtons + 1);
+
+			var abutton;
+			if(width < 1000){
+				//console.log("i is "+i);
+				var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+				var dy = i>4 ? 50 : 0;
+				abutton = uppersvg.append("g")
+				.attr("transform", "translate("+ dx + "," + dy + ")");
+			} else {
+				abutton = uppersvg.append("g")
+				.attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+			}
+			
+			
+			abutton.append("text")
+			.attr("x", 10)             
+		    .attr("y", 15)
+		    .attr("fill", bordercolor)
+	        .text(buttontext);
+	        
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			
+			abutton.append("rect")
+		    .attr("rx", 0)
+		    .attr("ry", 10)
+		    .attr("width", textWidth + 20)
+	 	    .attr("height", 20)
+		    .attr("class", "legend")
+		    .attr("id", buttonid) 
+		    .attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)")
+		    .style("stroke-width", toggled ? 0 : 0)
+		    .style("stroke", toggled ? bordercolor : "grey")
+		    .style("opacity", function(d) {
+		    	this.active = toggled;
+		     	})
+		    
+		    
+		    .on("click", function(){
+		    	
+		    	var isActive;
+		        // Hide or show the line
+		        d3.select("#"+lineid)
+		        	.style("opacity", function(d) {
+		        	// Toggle the active state
+		        	this.active = !this.active;
+		        	isActive = this.active;
+			        return	this.active ? 1 : 0;
+		        })
+		        
+		        // update the buttons border
+		        d3.select("#"+buttonid)
+		        .style("stroke", isActive ? bordercolor : "grey")
+		        .style("stroke-width", isActive ? 2 : 0)
+		    	});
+			
+		} // end drawAuxButton
+		
+		drawAuxButton("CATAPULT", "Catapult_Button", "black", "", 1, true);
+		drawAuxButton("OPTOJUMP", "Optojump_Button", "black", "", 2, true);
+		drawAuxButton("BIOMARKERS", "Biomarkers_Button", "black", "", 3, true);
+		drawAuxButton("TRAVEL STRESS", "TravelStress_Button", "black", "", 4, true);
+		drawAuxButton("UTC", "Utc_Button", "black", "", 5, true);
+		drawAuxButton("VLOS", "Vlos_Button", "black", "", 6, true);
+		drawAuxButton("SPORTS VU", "SportsVu_Button", "black", "", 7, true);
+		drawAuxButton("FUSIONETICS", "Fusionetics_Button", "black", "", 8, true);
+		
+		
+		var numButtons = 7;
+		
+		function drawButton(buttontext, buttonid, bordercolor, lineid, dotid, i, toggled){
+			
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.select("#"+lineid)
+        	.style("opacity", function(d) { 
+        		this.active = toggled;
+        		return toggled ? 1 : 0;
+        	})
+        	
+        	d3.select("#"+dotid)
+        	.style("opacity", function(d) { 
+        		this.active = toggled;
+        		return toggled ? 1 : 0;
+        	})
+
+			var abutton;
+			if(width < 1000){
+				console.log("i is "+i);
+				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
+				var dy = i>4 ? 50 : 0;
+				abutton = lowersvg.append("g")
+				.attr("transform", "translate("+ dx + "," + dy + ")");
+			} else {
+				abutton = lowersvg.append("g")
+				.attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+			}
+			
+			
+			abutton.append("text")
+			.attr("x", 10)             
+		    .attr("y", 15)
+		    .attr("fill", bordercolor)
+	        .text(buttontext);
+	        
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			
+			abutton.append("rect")
+		    .attr("rx", 0)
+		    .attr("ry", 10)
+		    .attr("width", textWidth + 20)
+	 	    .attr("height", 20)
+		    .attr("class", "legend")
+		    .attr("id", buttonid) 
+		    .attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)")
+		    .style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? bordercolor : "grey")
+		    .style("opacity", function(d) {
+		    	this.active = toggled;
+		     	//console.log(this.active);
+		     	})
+		    
+		    
+		    .on("click", function(){
+		    	
+		    	var isActive;
+		        // Hide or show the line
+		        d3.select("#"+lineid)
+		        	.style("opacity", function(d) {
+		        	// Toggle the active state
+		        	//console.log(this.active);
+		        	this.active = !this.active;
+		        	isActive = this.active;
+			        return	this.active ? 1 : 0;
+		        });
+		        
+		        // enable/disable the tooltips for this buttons dots
+		        d3.selectAll("#"+dotid)
+		        	.on("mouseover", function(d) {
+		        		return isActive ? 
+		        				d3.event.stopPropagation() : null; // TODO: rework this such that it re-enables the tooltips
+		        	});
+		        	
+		        // update the buttons border
+		        d3.select("#"+buttonid)
+		        .style("stroke", isActive ? bordercolor : "grey")
+		        .style("stroke-width", isActive ? 2 : 0)
+		    	});
+			
+		} // end drawButton
+		
+		
+		
+		//special function to draw and control button for acute chronic load
+		function drawACButton(buttontext, buttonid, bordercolor, lineid1, lineid2, dotid, i, toggled){
+			
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.select("#"+lineid1)
+        		.style("opacity", function(d) { 
+	        		this.active = toggled;
+	        		return toggled ? 1 : 0;
+        		})
+        	d3.select("#"+lineid2)
+	        	.style("opacity", function(d) { 
+	        		this.active = toggled;
+	        		return toggled ? 1 : 0;
+	        	})
+	        	
+// 	        d3.select("#"+dotid)
+//         	.style("opacity", function(d) { 
+//         		this.active = toggled;
+//         		return toggled ? 1 : 0;
+//         	})
+			
+			var abutton;
+			if(width < 1000){
+				console.log("i is "+i);
+				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
+				var dy = i>4 ? 50 : 0;
+				abutton = lowersvg.append("g")
+				.attr("transform", "translate("+ dx + "," + dy + ")");
+			} else {
+				abutton = lowersvg.append("g")
+				.attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+			}
+	        	
+			
+			abutton.append("text")
+			.attr("x", 10)             
+		    .attr("y", 15)
+		    .attr("fill", bordercolor)
+	        .text(buttontext);
+	        
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			
+			abutton.append("rect")
+		    .attr("rx", 0)
+		    .attr("ry", 10)
+		    .attr("width", textWidth + 20)
+	 	    .attr("height", 20)
+		    .attr("class", "legend")
+		    .attr("id", buttonid) 
+		    .attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)")
+		    .style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? bordercolor : "grey")
+		    .style("opacity", function(d) {
+		    	this.active = toggled;
+		     	//console.log(this.active);
+		     	})
+		    
+		    
+		    .on("click", function(){
+		    	
+		    	var isActive;
+		        // Hide or show the line
+		        d3.select("#"+lineid1)
+		        	.style("opacity", function(d) {
+		        	// Toggle the active state
+		        	//console.log(this.active);
+		        	this.active = !this.active;
+		        	isActive = this.active;
+		        	
+			        return	this.active ? 1 : 0;
+		        })
+		        
+		       	d3.select("#"+lineid2)
+		        	.style("opacity", function(d) {
+		        	// Toggle the active state
+		        	//console.log(this.active);
+		        	this.active = !this.active;
+		        	isActive = this.active;
+		        	
+			        return	this.active ? 1 : 0;
+		        })
+		        
+		         // Hide or show the dots on the line
+// 		        d3.selectAll("#"+dotid)
+// 		        	.style("opacity", function(d) {
+// 		        		return isActive ? 1 : 0;
+// 		        	});
+		        
+		        // update the buttons border
+		        d3.select("#"+buttonid)
+		        .style("stroke", isActive ? bordercolor : "grey")
+		        .style("stroke-width", isActive ? 2 : 0)
+		    	});
+			
+		} // end drawACButton
+		
+		
+		
+		var drawButtons = function(){
+			
+			// first remove all elements from this svg container
+			lowersvg.selectAll("g").remove();
+			//d3.selectAll("svg > *").remove();
+			// combined a/c load button
+			drawACButton("A:C WEEK LOAD", "ACLoad_Button", "red", "ACLoad", "ChronicLoad", "ACLoadDot", 1, true);
+			
+			
+			// player daily load
+			drawButton("SESSION LOAD", "PlayerLoad_Button", "purple", "PlayerLoad", "PlayerLoadDot", 2, true);
+			
+			//acc/dec load button 	
+			drawButton("ACC/DEC", "ACCDEC_Button", "blue", "ACCDECLoad", "ACCDECLoadDot", 3, false);
+				
+			// rpe score button
+			drawButton("RPE SCORES", "RPE_Button", "black", "RPEScore", null, 4, false);
+				
+			// sleep button
+			drawButton("SLEEP", "Sleep_Button", "steelblue", "Sleep", null, 5, false);
+			
+			// muscle soreness
+			drawButton("MUS SOR", "MuscleSoreness_Button", "green", "muscleSoreness", null, 6, false);
+			
+			// heart rate
+			drawButton("HR", "HR_Button", "orange", "heartrate", null, 7, false);
+		}
+		
+		drawButtons();
+
+	
+	// handling window resizing
+	d3.select(window).on('resize', resize);
+	
+	function resize() {
+		//console.log("resizing");
+	    // update width
+	    width = parseInt(d3.select('#chart_centre').style('width'), 10);
+	    //console.log("window width = "+width);
+	    
+	    xScale.range([0, width]);
+	    buttonOffset = width/(numButtons + 1);
+	    drawButtons();
+
+	    re_draw_chart();
+	    
+	    
+	}
+	
+});
+
+</script>
 
 
 

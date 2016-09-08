@@ -1,5 +1,6 @@
 package models;
 
+import java.io.File;
 import java.util.*;
 import javax.persistence.*;
 
@@ -17,6 +18,9 @@ public class Player extends Model {
 	public Date dateadded;
 	
 	public Blob playerPhoto;
+	
+	public File file;
+	public String filename;
 	
 	@Required
 	@ManyToOne
