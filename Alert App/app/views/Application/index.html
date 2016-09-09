@@ -17,7 +17,7 @@ body {
 }
 
 path {
-	stroke: steelblue;
+/* 	stroke: steelblue; */
 
 	/* the width of the plotted line */
 	/* stroke-width: 0.1; */
@@ -26,8 +26,13 @@ path {
 }
 
 .area {
-	fill : lightblue;
-	stroke-width: 0;
+/* 	fill : lightblue; */
+/* 	stroke-width: 0; */
+}
+
+.flag {
+  fill: red;
+  stroke: red;
 }
 
 
@@ -80,8 +85,8 @@ div.datatip {
   position: absolute;           
   text-align: left;    
   background-color: #778899;       
-  width: 150px;                  
-  height: 188px;                 
+  width: auto;                  
+  height: auto;                 
   padding: 5px;             
   font: 12px sans-serif;     
    border: 1px; 
@@ -99,7 +104,7 @@ th, td {
 }
 #datatiptable tr:nth-child(odd){
 	max-width: 100%;
-    background-color: #E6E6FA;
+    background-color: #FFFFFF;
 }
 
 
@@ -288,10 +293,22 @@ var acuteloadline = d3.svg.line()
 	.x(function(d) { return xScale(d.date); })
 	.y(function(d) { return y(d.ACUTE_LOAD); });
 	
+	
 var squadacuteloadline = d3.svg.line()
 	.interpolate("cardinal")
 	.x(function(d) { return xScale(d.date); })
 	.y(function(d) { return y(d.SQUAD_LOAD); });
+	
+// SQUAD_STAN_DEV
+var squadacutesdevunder = d3.svg.line()
+.interpolate("cardinal")
+.x(function(d) { return xScale(d.date); })
+.y(function(d) { return y(d.SQUAD_LOAD - d.SQUAD_STAN_DEV); });
+
+var squadacutesdevover = d3.svg.line()
+.interpolate("cardinal")
+.x(function(d) { return xScale(d.date); })
+.y(function(d) { return y(d.SQUAD_LOAD + d.SQUAD_STAN_DEV); });
 	
 var chronicloadarea = d3.svg.area()
 	.interpolate("basis")
@@ -392,7 +409,6 @@ function make_gridline() {
         .ticks(5);
 }
 
-//var formatTime = d3.time.format("%e %B");
 
 // called whenever mouse hovers over a data point
 var tooltip = d3.select("body").append("div")   
@@ -447,6 +463,8 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 		d.ACUTE_LOAD = (+d.ACUTE_LOAD/100);
 		d.CHRONIC_LOAD = (+d.CHRONIC_LOAD/100);
 		d.SQUAD_LOAD = (+d.SQUAD_LOAD/100);
+		d.SQUAD_STAN_DEV = (+d.SQUAD_STAN_DEV/100);
+		// SQUAD_STAN_DEV
 		
 // 		console.log(d.date +" "+
 // 				d.T_PLAYER_LOAD +" "+
@@ -509,18 +527,38 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	
 	function draw_chart() {
 		
-		// add the chronic load path line
-		innersvg.append("path")
-		.attr("class", "area")
-		// assigning a unique id attribute
-		.attr("id", "ChronicLoad")
-// 		// setting the stroke width on the fly
-// 		.attr("stroke-width", 1)
-// 		.attr("stroke", "#FFDFF3")
-		.style("fill", "#AFDFF3")
-		.style("opacity",1)
-		.attr("d", chronicloadarea(data));
+
 		
+
+		
+
+		// add the squad deviation over line
+		innersvg.append("path")
+		.attr("class", "line")
+		// assigning a unique id attribute
+		.attr("id", "SquadLoadDevOver")
+// 		// setting the stroke width on the fly
+		.attr("stroke-width", 1)
+ 		.style("stroke", "green")
+ 		.style("stroke-dasharray", ("2,5"))
+		.style("fill", "green")
+		.style("opacity",0.1)
+		.attr("d", squadacutesdevover(data));
+		
+		// add the squad deviation under line
+		innersvg.append("path")
+		.attr("class", "line")
+		// assigning a unique id attribute
+		.attr("id", "SquadLoadDevUnder")
+// 		// setting the stroke width on the fly
+		.attr("stroke-width", 1)
+ 		.style("stroke", "green")
+ 		.style("stroke-dasharray", ("2,5"))
+		.style("fill", "#FBFBFB")
+		.style("opacity",1)
+		.attr("d", squadacutesdevunder(data));
+		
+		// add the squad average line
 		innersvg.append("path")
 		.attr("class", "line")
 		// assigning a unique id attribute
@@ -533,7 +571,18 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 		.style("opacity",1)
 		.attr("d", squadacuteloadline(data));
 		
-		//squadacuteloadline
+		// add the chronic load path line
+		innersvg.append("path")
+		.attr("class", "area")
+		// assigning a unique id attribute
+		.attr("id", "ChronicLoad")
+// 		// setting the stroke width on the fly
+ 		.attr("stroke-width", 1)
+ 		.attr("stroke", "lightblue")
+		.style("fill", "#AFDFF3")
+		.style("fill-opacity",0.3)
+		.attr("d", chronicloadarea(data));
+		
 		
 		// add the player load path line
 		innersvg.append("path")
@@ -560,6 +609,41 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 		.style("stroke", "red")
 		.style("fill", "none")
 		.attr("d", acuteloadline(data));
+
+		// adding the flags to the acute line
+		innersvg.selectAll(".flag")
+		.data(data)
+		.enter()
+		.append("path")
+ 		.filter(function(d){
+ 			return d.ACUTE_LOAD > (d.CHRONIC_LOAD * 1.5) | d.ACUTE_LOAD < (d.CHRONIC_LOAD * 0.8) ? d.ACUTE_LOAD : null;
+ 		})
+		.attr("class", "flag")
+		.attr("id", "AcuteUPFlags")
+		.attr("d", d3.svg.symbol().type( function(d){
+			return d.ACUTE_LOAD > (d.CHRONIC_LOAD * 1.5) ? 	"triangle-up" : "triangle-down";	})
+			.size(20))
+		
+		.attr("transform", function(d) { 
+			return "translate(" + xScale(d.date) + "," + (y(d.ACUTE_LOAD) + (d.ACUTE_LOAD > (d.CHRONIC_LOAD * 1.5) ? 5 : -5)) + ")" });
+		
+		
+		
+		
+		
+		// drawing circles
+// 		.append("circle")
+// 		.filter(function(d){
+// 			return d.ACUTE_LOAD > (d.CHRONIC_LOAD * 1.5) ? d.ACUTE_LOAD : null;
+// 		})
+// 		.attr("id", "ACFlags")
+// 		.style("fill", "red")
+// 		.attr("r", 5)
+// 		.attr("cx", function(d){return xScale(d.date);})
+// 		.attr("cy", function(d) { return y(d.ACUTE_LOAD); });
+		
+		
+		
 		
 		// add the acc/dec load path line
 		innersvg.append("path")
@@ -657,7 +741,7 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 			.style("border-color", "#778899");
     		
     		datatip .html("<table id='"+"datatiptable'"+"><tr><th>Data</th><th>Value</th></tr>" +
-    				"<tr><td>Acute Load</td><td>"+ (parseInt(d.ACUTE_LOAD * 100)) +"</td></tr>" +
+    				"<tr><td>Acute Load</td><td>"+ (parseInt(d.ACUTE_LOAD * 100))+" : "+ (Math.round((d.ACUTE_LOAD/d.CHRONIC_LOAD)*100)) +"%</td></tr>" +
     				"<tr><td>Chronic Load</td><td>"+ (parseInt(d.CHRONIC_LOAD * 100)) +"</td></tr>" +
     				"<tr><td>Player Load </td><td>"+ (parseInt(d.T_PLAYER_LOAD * 100)) +"</td></tr>" +
     				"<tr><td>Acc/Dec Load</td><td>"+ (parseInt(d.T_ACC_DEC_LOAD * 100)) +"</td></tr>" +
@@ -665,6 +749,7 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
     				"<tr><td>Sleep</td><td>"+ (parseInt(d.sleep)) +"</td></tr>" +
     				"<tr><td>Muscle Soreness</td><td>"+ (parseInt(d.muscleSoreness)) +"</td></tr>" +
     				"<tr><td>Heart Rate Exertion</td><td>"+ (parseInt(d.T_HEART_RATE_EXERTION * 10)) +"</td></tr>" +
+    				"<tr><td>Notes</td><td>"+ "click for notes" +"</td></tr>" +
     				"</table")
     				
 			.style("left", (d3.event.pageX) + "px")
@@ -709,7 +794,7 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 			.style("border-color", "#778899");
     		
     		datatip .html("<table id='"+"datatiptable'"+"><tr><th>Data</th><th>Value</th></tr>" +
-    				"<tr><td>Acute Load</td><td>"+ (parseInt(d.ACUTE_LOAD * 100)) +"</td></tr>" +
+    				"<tr><td>Acute Load</td><td>"+ (parseInt(d.ACUTE_LOAD * 100))+" : "+ (Math.round((d.ACUTE_LOAD/d.CHRONIC_LOAD)*100)) +"%</td></tr>" +
     				"<tr><td>Chronic Load</td><td>"+ (parseInt(d.CHRONIC_LOAD * 100)) +"</td></tr>" +
     				"<tr><td>Player Load </td><td>"+ (parseInt(d.T_PLAYER_LOAD * 100)) +"</td></tr>" +
     				"<tr><td>Acc/Dec Load</td><td>"+ (parseInt(d.T_ACC_DEC_LOAD * 100)) +"</td></tr>" +
@@ -717,6 +802,7 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
     				"<tr><td>Sleep</td><td>"+ (parseInt(d.sleep)) +"</td></tr>" +
     				"<tr><td>Muscle Soreness</td><td>"+ (parseInt(d.muscleSoreness)) +"</td></tr>" +
     				"<tr><td>Heart Rate Exertion</td><td>"+ (parseInt(d.T_HEART_RATE_EXERTION * 10)) +"</td></tr>" +
+    				"<tr><td>Notes</td><td>"+ "click for notes" +"</td></tr>" +
     				"</table")
     				
 			.style("left", (d3.event.pageX) + "px")
@@ -732,9 +818,22 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	function re_draw_chart() {
 	
 		datatip.transition().duration(200).style("opacity", 0);
+		
+		innersvg.selectAll("#AcuteUPFlags")
+		.attr("transform", function(d) { return "translate(" + xScale(d.date) + "," + (y(d.ACUTE_LOAD) + (d.ACUTE_LOAD > (d.CHRONIC_LOAD * 1.5) ? 5 : -5)) + ")" });
+		
+
 
 		innersvg.selectAll("#SquadLoad")
 		.attr("d", squadacuteloadline(data));
+		
+		// add the squad deviation under line
+		innersvg.selectAll("#SquadLoadDevUnder")
+		.attr("d", squadacutesdevunder(data));
+		
+		// add the squad deviation over line
+		innersvg.selectAll("#SquadLoadDevOver")
+		.attr("d", squadacutesdevover(data));
 		
 		innersvg.selectAll("#PlayerLoad")
 		.attr("d", playerloadline(data));

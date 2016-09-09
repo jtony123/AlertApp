@@ -27,7 +27,7 @@ import play.jobs.OnApplicationStart;
 public class CSVLoader {
 
 	String header;
-	String additionalColumnHeaders = ",ACUTE_LOAD,CHRONIC_LOAD,SQUAD_LOAD";
+	String additionalColumnHeaders = ",ACUTE_LOAD,CHRONIC_LOAD,SQUAD_LOAD,SQUAD_STAN_DEV";
 	
 	Map<Integer, ArrayList<String>> playerfiles = new HashMap<Integer, ArrayList<String>>();
 	Map<String, ArrayList<Integer>> squadacuteloads = new HashMap<String, ArrayList<Integer>>();
@@ -143,7 +143,8 @@ public class CSVLoader {
 
 			} // end while loop
 			
-		
+			// calculate the squad average for each date
+			// append the squad average to each line of each players file
 	        Map<Integer, ArrayList<String>> map = playerfiles;
 	        		for (Entry<Integer, ArrayList<String>> entry : map.entrySet())
 	        		{
@@ -154,16 +155,38 @@ public class CSVLoader {
 	    					String[] tokens = s.split(",");
 	    					// get the player id from the relevant column
 	    					String date = tokens[dateindex];
-	    					int squadtotalperdate = 0;
 	    					
+	    					// calculate the squad average for this date
+	    					int squadtotalperdate = 0;
 	    		        	for(Integer i : squadacuteloads.get(date)){
-	    		        		System.out.print(i+" ");
 	    		        		squadtotalperdate += i;
 	    		        	}
 	    		        	int squadavg = squadtotalperdate/playerfiles.size();
-	    		        	s = s + ","+squadavg;
+	    		        	
+	    		        	// calculate the standard deviations
+	    		        	List<Double> deviations = new ArrayList<Double>();
+	    		        	for(Integer i : squadacuteloads.get(date)){
+	    		        		deviations.add(Math.pow((i-squadavg), 2));
+	    		        	}
+	    		        	
+	    		        	// calculate the variance
+	    		        	double variance = 0;
+	    		        	for(Double d : deviations){
+	    		        		variance+=d;
+	    		        	}
+	    		        	variance = variance/deviations.size();
+	    		        	
+	    		        	int standardDeviation = (int) Math.sqrt(variance);
+	    		        	System.out.println("sd = " + standardDeviation);
+	    		        	
+	    		        	
+	    		        	// append the squad average to this data line for this player
+	    		        	s = s + ","+squadavg+","+standardDeviation;
+	    		        	
+	    		        	// add the new line to the new list
 	    		        	newdata.add(s);
 	        			}
+	        			// replace the old list with the new list
 	        			entry.setValue(newdata);
 	        		    
 	        		}

@@ -38,9 +38,7 @@ public class Application extends Controller {
 
     
     public static void index(int playernumber, String category) {
-    	//System.out.println("application.index method called - playernumber=" +playernumber);
-    	//System.out.println("Category called = " + category);
-    	//List<Player> players = Player.find("byCoach", connectedClient).fetch();
+
     	List<Player> players;
     	if(category==null){
     		players = Player.findClientsPlayersCategorisedWith(connectedClient, "All");
@@ -57,8 +55,6 @@ public class Application extends Controller {
     	}
 
     	int playerIndex = players.indexOf(player);
-    	System.out.println("file name of player = " + player.filename);
-    	
     	
     	List<Category> categories = Category.findAll();
     	
