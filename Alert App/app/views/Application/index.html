@@ -258,7 +258,8 @@ var	navbarh = windowHeight/16,
 
 
 // function to parse the date time
-var parseDate = d3.time.format("%Y%m%d").parse;
+//var parseDate = d3.time.format("%Y%m%d").parse;
+var parseDate = d3.time.format("%d/%m/%Y").parse;
 
 // set the ranges
 var xScale = d3.time.scale().range([0, width]);
@@ -286,6 +287,11 @@ var acuteloadline = d3.svg.line()
 	//.defined(function(d) {return d.T_PLAYER_LOAD != ""; })
 	.x(function(d) { return xScale(d.date); })
 	.y(function(d) { return y(d.ACUTE_LOAD); });
+	
+var squadacuteloadline = d3.svg.line()
+	.interpolate("cardinal")
+	.x(function(d) { return xScale(d.date); })
+	.y(function(d) { return y(d.SQUAD_LOAD); });
 	
 var chronicloadarea = d3.svg.area()
 	.interpolate("basis")
@@ -426,16 +432,31 @@ var datatip = d3.select("body").append("div")
 //})
 
 var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(error, data) {
+	
+
 	data.forEach(function(d) {
+
+	
 		d.date = parseDate(d.date);
-		d.T_PLAYER_LOAD = +(d.T_PLAYER_LOAD / 100);//**************note scaling of large number
-		d.T_ACC_DEC_LOAD = +(d.T_ACC_DEC_LOAD / 100);
+		d.T_PLAYER_LOAD = ((+d.T_PLAYER_LOAD) / 100);//**************note scaling of large number
+		d.T_ACC_DEC_LOAD = (+d.T_ACC_DEC_LOAD / 100);
 		d.pExertion = +d.pExertion;
 		d.sleep = +d.sleep;
 		d.muscleSoreness = +d.muscleSoreness;
-		d.T_HEART_RATE_EXERTION = +(d.T_HEART_RATE_EXERTION / 10);
-		d.ACUTE_LOAD = +(d.ACUTE_LOAD/100);
-		d.CHRONIC_LOAD = +(d.CHRONIC_LOAD/100);
+		d.T_HEART_RATE_EXERTION = (+d.T_HEART_RATE_EXERTION / 10);
+		d.ACUTE_LOAD = (+d.ACUTE_LOAD/100);
+		d.CHRONIC_LOAD = (+d.CHRONIC_LOAD/100);
+		d.SQUAD_LOAD = (+d.SQUAD_LOAD/100);
+		
+// 		console.log(d.date +" "+
+// 				d.T_PLAYER_LOAD +" "+
+// 				d.T_ACC_DEC_LOAD +" "+
+// 				d.pExertion +" "+
+// 				d.sleep +" "+
+// 				d.muscleSoreness +" "+
+// 				d.T_HEART_RATE_EXERTION +" "+
+// 				d.ACUTE_LOAD +" "+
+// 				d.CHRONIC_LOAD)
 	});
 	
 	
@@ -500,7 +521,20 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 		.style("opacity",1)
 		.attr("d", chronicloadarea(data));
 		
-
+		innersvg.append("path")
+		.attr("class", "line")
+		// assigning a unique id attribute
+		.attr("id", "SquadLoad")
+// 		// setting the stroke width on the fly
+		.attr("stroke-width", 2)
+ 		.style("stroke", "green")
+ 		.style("stroke-dasharray", ("5,5"))
+		.style("fill", "none")
+		.style("opacity",1)
+		.attr("d", squadacuteloadline(data));
+		
+		//squadacuteloadline
+		
 		// add the player load path line
 		innersvg.append("path")
 		.attr("class", "line")
@@ -699,6 +733,9 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	
 		datatip.transition().duration(200).style("opacity", 0);
 
+		innersvg.selectAll("#SquadLoad")
+		.attr("d", squadacuteloadline(data));
+		
 		innersvg.selectAll("#PlayerLoad")
 		.attr("d", playerloadline(data));
 		
@@ -952,7 +989,7 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 			
 			var abutton;
 			if(width < 1000){
-				console.log("i is "+i);
+				
 				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
 				var dy = i>4 ? 50 : 0;
 				abutton = lowersvg.append("g")

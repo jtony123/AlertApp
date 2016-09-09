@@ -6,9 +6,18 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Queue;
+
+import org.apache.commons.collections.Buffer;
+import org.apache.commons.collections.buffer.CircularFifoBuffer;
 
 import models.GPSData;
 import models.Player;
@@ -18,133 +27,146 @@ import play.jobs.OnApplicationStart;
 public class CSVLoader {
 
 	String header;
-	List<String> datapoints = new ArrayList<String>();
+	String additionalColumnHeaders = ",ACUTE_LOAD,CHRONIC_LOAD,SQUAD_LOAD";
 	
-	List<Instance> instances = new ArrayList<Instance>();
-	List<String> headers = new ArrayList<String>();
+	Map<Integer, ArrayList<String>> playerfiles = new HashMap<Integer, ArrayList<String>>();
+	Map<String, ArrayList<Integer>> squadacuteloads = new HashMap<String, ArrayList<Integer>>();
+	
+	Map<Integer, CircularFifoBuffer> playeracuteloads = new HashMap<Integer, CircularFifoBuffer>();
+	Map<Integer, CircularFifoBuffer> playerchronicloads = new HashMap<Integer, CircularFifoBuffer>();
 	
 	
 	
+	public Map<Integer, ArrayList<String>> getPlayerfiles() {
+		return playerfiles;
+	}
+
 	public String getHeader() {
 		return header;
 	}
 
-	public List<String> getDatapoints() {
-		return datapoints;
-	}
-
-
 	public void loadCSVFile(String fileName){
 		BufferedReader fileReader = null;
 		String line ="";
-		int lineCounter = 0;
-		int tokenCount = 0;
 		
 		try {
 			fileReader = new BufferedReader(new FileReader(fileName));
 			
 			// this first line should contain the attribute labels
 			header = fileReader.readLine();
+			header = header.replaceAll("\\.", "_");
+			header = header.replaceAll("Dates", "date");
+			header+=additionalColumnHeaders;
+			String[] headertokens = header.split(",");
+
+			List<String> headerstrings = Arrays.asList(headertokens);
+			
+			// get the index of the ID column
+			int idindex = headerstrings.indexOf("ID");
+			int playerloadindex = headerstrings.indexOf("T_PLAYER_LOAD");
+			int dateindex = headerstrings.indexOf("date");
+			
+			System.out.println("id index found"+idindex);
+			System.out.println("load index found"+playerloadindex);
+			System.out.println("date index found"+dateindex);
 			
 			//Read the file line by line
 
 			while ((line = fileReader.readLine()) != null) {
-				datapoints.add(line);
-
-			} // end while loop
-			
-			fileReader.close();
-		} catch (IOException e) {
-			// TODO return an error to the user
-			e.printStackTrace();
-		} 
-	}
-	
-	
-	
-	
-	public void loadFile(String fileName){
-		BufferedReader fileReader = null;
-		String line ="";
-		String[] tokens;
-		int lineCounter = 0;
-		int tokenCount = 0;
-		
-		try {
-			fileReader = new BufferedReader(new FileReader(fileName));
-			
-			// this first line should contain the attribute labels
-			line = fileReader.readLine();
-			tokens = line.split(",");
-			
-			for ( int i=0; i<tokens.length-1; ++i){
-				headers.add(tokens[i]);
-				System.out.print(tokens[i] + " ");
-			}
-			System.out.println();
-			
-			tokenCount = tokens.length;
-//			for ( int i=0; i<tokens.length-1; ++i){
-//				attributeLabels.add(tokens[i]);
-//			}
-		
-			//Read the file line by line
-
-			while ((line = fileReader.readLine()) != null) {
-				++lineCounter;
-				tokens = line.split(",");
-
-				if (tokens.length > 0 && tokens.length == tokenCount) {
-					
-					System.out.println(line);
-
-//					DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-//					String x = tokens[0];
-//					try {
-//						Date inputDate = df.parse(tokens[1].replace("\"",""));
-//					} catch (ParseException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//					//System.out.println("date = "+inputDate);
-//					int dayNumber = Integer.parseInt(tokens[1]);
-//					int tT_Time;
-//					if(tokens[2].equalsIgnoreCase("na") | tokens[2].equalsIgnoreCase("") ){
-//						tT_Time = 0;
-//					} else {
-//						tT_Time = Integer.parseInt(tokens[2]);
-//					}
-//					
-//					int tT_Distance ;
-//					if(tokens[3].equalsIgnoreCase("na") | tokens[3].equalsIgnoreCase("")){
-//						tT_Distance  = 0;
-//					} else {
-//						tT_Distance  = Integer.parseInt(tokens[3]);
-//					}
-//					
-//					int tHigh_Intensity_Distance ;
-//					if(tokens[4].equalsIgnoreCase("na") | tokens[4].equalsIgnoreCase("") ){
-//						tHigh_Intensity_Distance  = 0;
-//					} else {
-//						tHigh_Intensity_Distance  = Integer.parseInt(tokens[4]);
-//					}
-//					
-//					Instance ins = new Instance(lineCounter);
-//					
-//					for ( int i=0; i<tokens.length-1; ++i){
-//						ins.addAttributeValue(null, tokens[i]);
-//					}
-//					instances.add(ins);
-//					System.out.println();
-
-				}
-				//++lineCounter;
-			} // end while loop
-			
-			for(Instance ins : instances){
+				//replace all NA values with 0
+				line = line.replaceAll("NA", "0");
 				
-				//System.out.println(ins.toString());
-			}
+				// split the line into string tokens
+				String[] tokens = line.split(",");
+				// get the player id from the thrid column
+				Integer playerid = Integer.parseInt(tokens[idindex]);
+				String date = tokens[dateindex];
+				
+				int acutetotal = 0;
+				int chronictotal = 0;
+				// if a new player encountered
+				if(playerfiles.containsKey(playerid)) {
+					// add the acute load to the queue
+					playeracuteloads.get(playerid).add(tokens[playerloadindex]);
+					playerchronicloads.get(playerid).add(tokens[playerloadindex]);
+					// calculate the acute load
+					
+					for(Object o : playeracuteloads.get(playerid).toArray()){
+						if(((String)o).equals("")){
+							
+						} else {
+						acutetotal += Integer.parseInt((String)o);
+						}
+					}
+					acutetotal = acutetotal/7;
+					
+					
+					
+					for(Object o : playerchronicloads.get(playerid).toArray()){
+						if(((String)o).equals("")){
+							
+						} else {
+							chronictotal += Integer.parseInt((String)o);
+						}
+						
+					}
+					chronictotal = chronictotal/28;
+					
+					line += "," + acutetotal + "," + chronictotal;
+					playerfiles.get(playerid).add(line);
+					
+					
+					
+				} else {
+					line += ",0,0";
+					ArrayList<String> datapoints = new ArrayList<String>();
+					datapoints.add(line);
+					playerfiles.put(playerid, datapoints);
+					
+					CircularFifoBuffer acuteload = new CircularFifoBuffer(7);
+					acuteload.add(tokens[playerloadindex]);
+					
+					CircularFifoBuffer chronicload = new CircularFifoBuffer(28);
+					chronicload.add(tokens[playerloadindex]);
+					
+					playeracuteloads.put(playerid, acuteload);
+					playerchronicloads.put(playerid, chronicload);
+				}
+				
+				if(squadacuteloads.containsKey(date)){
+					squadacuteloads.get(date).add(acutetotal);
+				} else {
+					ArrayList<Integer> dateacuteloads = new ArrayList<Integer>();
+					dateacuteloads.add(acutetotal);
+					squadacuteloads.put(date, dateacuteloads);
+				}
+
+			} // end while loop
+			
+		
+	        Map<Integer, ArrayList<String>> map = playerfiles;
+	        		for (Entry<Integer, ArrayList<String>> entry : map.entrySet())
+	        		{
+	        			ArrayList<String> newdata = new ArrayList<String>();
+	        			
+	        			for (String s : entry.getValue()){
+
+	    					String[] tokens = s.split(",");
+	    					// get the player id from the relevant column
+	    					String date = tokens[dateindex];
+	    					int squadtotalperdate = 0;
+	    					
+	    		        	for(Integer i : squadacuteloads.get(date)){
+	    		        		System.out.print(i+" ");
+	    		        		squadtotalperdate += i;
+	    		        	}
+	    		        	int squadavg = squadtotalperdate/playerfiles.size();
+	    		        	s = s + ","+squadavg;
+	    		        	newdata.add(s);
+	        			}
+	        			entry.setValue(newdata);
+	        		    
+	        		}
 			
 			fileReader.close();
 		} catch (IOException e) {

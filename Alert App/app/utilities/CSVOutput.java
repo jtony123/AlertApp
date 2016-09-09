@@ -15,22 +15,20 @@ import java.util.List;
  */
 public class CSVOutput {
 	
-		public static String destinationFile;
+		//public static String destinationFile;
 		public static int fileVersion = 1;
 		public static String fileExtension = ".csv";
 	
-	public CSVOutput(String destination){		
-		destination = destination.trim();
-		destinationFile = destination;
+	public CSVOutput(){		
 	}
 	
-	public void writeOutFile(String header, List<String> datapoints){
+	public String writeOutFile(String filepath, String filename, String header, List<String> datapoints){
 		
-		File file = new File(destinationFile+fileVersion+fileExtension);
+		File file = new File(filepath + filename + fileVersion + fileExtension);
 		// find the next available filename
 		while(file.exists()){			
-			++fileVersion;;			
-			file = new File(destinationFile+fileVersion+fileExtension);
+			++fileVersion;			
+			file = new File(filepath + filename + fileVersion + fileExtension);
 		}
 		// create the new file
 		if ( !file.exists() ){
@@ -61,58 +59,8 @@ public class CSVOutput {
 			out.close();
 		}
 		
-		
-		
+		return filename + fileVersion + fileExtension;
 	}
 	
-	/**
-	 * @param averageInt 
-	 * @param accuracies 
-	 * @param tree 
-	 * @param testresult 
-	 * @param args
-	 * @throws Exception 
-	 */
-	public void writeOutResults(int averageInt, List<Double> accuracies, String tree, List<Instance> testResult) {
-			
-		File file = new File(destinationFile+fileVersion+fileExtension);
-		
-		// find the next available filename
-		while(file.exists()){			
-			++fileVersion;;			
-			file = new File(destinationFile+fileVersion+fileExtension);
-		}
-		// create the new file
-		if ( !file.exists() ){
-			try {
-				
-				file.createNewFile();
-			} catch (IOException e1) {
-				// TODO return an error message to the user
-				e1.printStackTrace();
-			}
-	      }		
-		
-		PrintWriter out = null;
-		try {
-			out = new PrintWriter(file, "UTF-8");
-			out.println("Average accuracy = " + averageInt +"%");
-			out.println("Accuracy values;");
-			for(Double d : accuracies){				
-				out.print((int)(d*100)+"%, ");
-			}
-			out.println();
-			out.print(tree);
-			out.println();
-			for(Instance ins : testResult){
-				out.println(ins.toString());
-			}
-		} catch (Exception e) {
-			// TODO return an error message to the user
-			e.printStackTrace();
-		}	finally {
-			out.flush();
-			out.close();
-		}	
-	}
+	
 }

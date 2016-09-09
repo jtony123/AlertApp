@@ -4,6 +4,7 @@ import play.*;
 import play.cache.Cache;
 import play.data.Upload;
 import play.db.jpa.Blob;
+import play.libs.MimeTypes;
 import play.mvc.*;
 
 import java.io.File;
@@ -166,48 +167,32 @@ public class Application extends Controller {
     
  public static void getCSV(int playerNumber){
 	 Player player = Player.find("byPlayernumber", playerNumber).first();
-	 renderBinary(Play.getFile("data/attachments/" +player.filename));
-	 
-	 //renderBinary(Play.getFile("data/attachments/GraphCSVFiles/player"+playerNumber+".csv"));
+	 renderBinary(Play.getFile("data/attachments/GraphCSVFiles/"+player.filename));
  }
-    
- public static void saveCSV(int playernumber, Blob data){
-	 
-	 
-	 
-	  File file;
-	  String filename = null;
-	 // just for development
-	 if(playernumber != 0) {
-		Player player = Player.find("byPlayernumber", playernumber).first();
-	   	file = data.getFile();
-	   	player.file = data.getFile();
-	   	player.filename = file.getName();
-	   	player.save();
-	   	filename = file.getName();
-	   	System.out.println("name = " + filename);
-	   	System.out.println("saved");
-	 } else {
-		file = data.getFile();
-    	CSVLoader csvloader = new CSVLoader();
-    	csvloader.loadCSVFile(file.getAbsolutePath());//.loadFile(file.getAbsolutePath());
-    	CSVOutput output = new CSVOutput("data/attachments/GraphCSVFiles/" + file.getName());
-    	output.writeOutFile(csvloader.getHeader(), csvloader.getDatapoints());
-	 }
-	   
-	   	
 
-    	
-    	
-//    	System.out.println("file exists? "+file.exists());
-//    	cSVLoader.loadFile(filepath);
-    	
-	 
-    	
-    	
-    	
-    	index(4,"All");
-    }
+ 
+ public static void saveCSV(Blob data){ 
+
+
+	 File file = data.getFile();
+
+	 CSVLoader csvloader = new CSVLoader();
+	 csvloader.loadCSVFile(file.getAbsolutePath());
+
+	 Map<Integer, ArrayList<String>> playerfiles = csvloader.getPlayerfiles();
+	 Iterator it = playerfiles.entrySet().iterator();
+	 while (it.hasNext()) {
+		 Map.Entry pair = (Map.Entry)it.next();
+		 CSVOutput output = new CSVOutput();
+
+		 Player player = Player.find("byPlayernumber", pair.getKey()).first();
+		 player.filename =  output.writeOutFile("data/attachments/GraphCSVFiles/", "player"+player.playernumber+"_1", csvloader.getHeader(), (List<String>) pair.getValue());
+
+		 player.save();
+	 }
+
+	 index(4,"All");
+ }
     
 
 }
