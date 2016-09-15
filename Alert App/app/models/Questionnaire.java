@@ -1,0 +1,58 @@
+package models;
+
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import play.data.validation.Required;
+import play.db.jpa.Model;
+
+@Entity
+public class Questionnaire extends Model {
+	
+	@Required
+	@ManyToOne
+	public Player player;
+	
+	@Required
+	public Date datetime;
+	
+	public String notes;
+	
+	@OneToMany(mappedBy="questionnaire", cascade=CascadeType.ALL)
+	public List<Answer> answers;
+	
+	
+	public Questionnaire (Player player, Date datetime){
+		
+		this.player = player;	
+		this.datetime = datetime;
+		answers= new ArrayList<Answer>();
+		
+	}
+	
+	public void addPlayerQuestionnaireNote(String note) {
+		this.notes = note;
+		this.save();
+	}
+	
+	public void addPlayerQuestionnaireAnswer(Answer answer){
+		answers.add(answer);
+		
+//		if(answer.answerValue > answer.question.flagThreshold){
+//			this.outOfRange = true;
+//		} else {
+//			this.outOfRange = false;
+//		}
+		
+		this.save();
+	}
+
+}

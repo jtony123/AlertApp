@@ -103,12 +103,16 @@
 		      <br>
 		      
 		      <!-- the list of questions and answers -->
-		      #{form @Application.savePreTrain(player.playernumber)}
+		      #{form @Application.saveQuestionnaire(player.playernumber)}
 		      ${player.questions}
+		      
+
+		      	
 		      #{list items:player.questions, as:'q'}
 		      	<!-- question 1 -->
 		      	<div class="container-fluid">
-		      	<h3>${q.question}</h3>
+		      	<h3>${q.question}${q.questioncategories.questionCategory}</h3>
+		      	
 					  <div class="btn-group btn-group-justified" data-toggle="buttons">
 					  #{field 'answer'}
 					    #{list items:q.answers, as:'a'}

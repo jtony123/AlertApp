@@ -134,27 +134,85 @@ public class Application extends Controller {
     		render(active, player, preTraindeadline, postTraindeadline, gpsdataDeadline);
  
     }
+    
+    public static void record(int playernumber, String category) {
+    	
+    	List<Player> players;
+    	if(category==null){
+    		players = Player.findClientsPlayersCategorisedWith(connectedClient, "All");
+    		category = "All";
+    	} else {
+    		players = Player.findClientsPlayersCategorisedWith(connectedClient, category);
+    	}
+    	
+    	Player player;
+    	if (playernumber == 0) {
+    		player = players.get(0);
+    	} else {
+    		player = Player.find("byPlayernumber", playernumber).first();
+    	}
+    	
+        
+    	System.out.println();
+        System.out.println(player.playername);
+        System.out.println("getting players categorised questions");
+        List<Question> playerquestions1 = player.findPlayerQuestionsCategorisedWith("PreTrain", player.playernumber);
+        
+        for(Question q : playerquestions1){
+        	System.out.println(q.question);
+        	for(Answer a : q.answers){
+        		System.out.print(" - "+a.answer);
+        	}
+        	System.out.println();
+        }
+        
+    	int playerIndex = players.indexOf(player);
+    	
+    	List<Category> categories = Category.findAll();
+        
+    	Date preTraindeadline = new Date();
+    	preTraindeadline.setHours(6);
+    	preTraindeadline.setMinutes(0);
+    	preTraindeadline.setSeconds(0);
+    	
+    	Date postTraindeadline = new Date();
+    	postTraindeadline.setHours(6);
+    	postTraindeadline.setMinutes(0);
+    	postTraindeadline.setSeconds(0);
+    	
+    	Date gpsdataDeadline = new Date();
+    	gpsdataDeadline.setHours(6);
+    	gpsdataDeadline.setMinutes(0);
+    	gpsdataDeadline.setSeconds(0);
+    	
+    	String active = "record";
+		//render(active, player, preTraindeadline, postTraindeadline, gpsdataDeadline);
+		render(active, categories, category, player, playerIndex, players, preTraindeadline, postTraindeadline, gpsdataDeadline);
+
+}
 
     
-    public static void preQuestionForm(){
-    	render();
-    }
+ 
     
-    public static void savePreTrain(int playernumber, String[] anAnswer){
+    public static void saveQuestionnaire(int playernumber, String[] anAnswer){
     	
     	Player player = Player.find("byPlayernumber", playernumber).first();
     	
     	if(anAnswer != null){
-    		PreTrain preTrain = new PreTrain(player, new Date(), true);
+    		Questionnaire questionnaire = new Questionnaire(player, new Date());
             for(String ans : anAnswer) {
                 Answer answerGiven = Answer.findById(Long.parseLong(ans));
-                preTrain.addPlayerPreTrainAnswer(answerGiven);
+                questionnaire.addPlayerQuestionnaireAnswer(answerGiven);
             }
     	} else {
     		System.out.println("no buttons selected");
     	}
-    	index(0, "All");
+    	
+    	++playernumber;
+    	record(playernumber, "All");
     }
+    
+    
     
     public static void readCSV(){
     
@@ -189,6 +247,28 @@ public class Application extends Controller {
 
 	 index(4,"All");
  }
+ 
+ public static void preQuestionForm(){
+	 	render();
+	 }
+ 
+//	public static void savePreTrain(int playernumber, String[] anAnswer) {
+//
+//		Player player = Player.find("byPlayernumber", playernumber).first();
+//
+//		if (anAnswer != null) {
+//			PreTrain preTrain = new PreTrain(player, new Date(), true);
+//			for (String ans : anAnswer) {
+//				Answer answerGiven = Answer.findById(Long.parseLong(ans));
+//				preTrain.addPlayerPreTrainAnswer(answerGiven);
+//			}
+//		} else {
+//			System.out.println("no buttons selected");
+//		}
+//		index(0, "All");
+//	}
+ 
+
     
 
 }

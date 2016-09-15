@@ -1,0 +1,152 @@
+#{extends 'main.html' /}
+#{set title:player /}
+
+<div class="container-fluid" id="outer_container" style="background-color: #FBFBFB">
+
+<!-- insert the standard nav bar -->
+#{navigationbar client:client, active:active, categories:categories/}
+
+
+<div class="container-fluid" id="groupings_toggle_buttons">
+	<div>
+		#{list items:categories, as:'cat'}
+			#{if category.equals(cat.name)}
+	         			<a href="@{Application.record(player.playernumber, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a>
+	     	#{/if}
+   			#{else}
+   				<a href="@{Application.record(player.playernumber, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a>
+   			#{/else}
+	    #{/list}
+	</div>
+</div>
+<!-- end  groupings_toggle_buttons -->
+
+<div class="row" id ="player_carousel">
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
+	  
+	  <div class="btn-group btn-group-justified">
+	   				
+	   #{if players.size() > 5}				
+	   				<a href="@{Application.record(players[(playerIndex - 4) % players.size()].playernumber, category)}" class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
+						<div >
+					
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							<<
+						</div>
+					</a>
+		#{/if}
+	  #{if players.size() > 5}
+	  #{player_icon_small player:players[(playerIndex - 3) % players.size()], category:category, active:active /}
+	  #{/if}
+	  #{if players.size() > 3}
+	  #{player_icon_small player:players[(playerIndex - 2) % players.size()], category:category, active:active /}
+	  #{/if}
+	  #{if players.size() > 1}
+	  #{player_icon_small player:players[(playerIndex - 1) % players.size()], category:category, active:active /}
+	  #{/if}		
+	  </div>
+	  </div>
+	  
+	  
+	  
+	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"><p class="text-center"></p>
+	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
+	  			
+					<a href="@{Application.record(player.playernumber)}" class="thumbnail" style="margin-bottom: 0px;">
+						<div >
+						#{if player.playerPhoto.exists()}
+						<img class="img-responsive" src="@{Application.playerPhoto(player.id)}" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
+						#{/if}
+						#{else}
+						<img class="img-responsive" src="@{'public/images/player-headshot.png'}" alt=${player.playername} style="margin: 0 auto; max-width:150px;height:150px"/>
+						#{/else}
+						
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							${player.playername}
+							
+						</div>
+						
+					</a>
+<!-- 					<div class="text-center"> -->
+<!-- 					#{list items:player.categories, as:'cat'} -->
+<!-- 						#{if category.equals(cat.name)} -->
+<!-- 		           			<a href="@{Application.index(player.playernumber, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a> -->
+<!-- 		       			#{/if} -->
+<!-- 		       			#{else} -->
+<!-- 		       				<a href="@{Application.index(player.playernumber, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a> -->
+<!-- 		       			#{/else} -->
+<!-- 	       			#{/list} -->
+<!-- 				</div> -->
+				</h4>
+				
+	  </div>
+	  
+	  
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
+	 
+	 	<div class="btn-group btn-group-justified">
+	 		
+	#{if players.size() > 2}
+	#{player_icon_small player:players[(playerIndex + 1) % players.size()], category:category, active:active /}
+	#{/if}
+	#{if players.size() > 4}
+	#{player_icon_small player:players[(playerIndex + 2) % players.size()], category:category, active:active /}
+	#{/if}
+	#{if players.size() > 6}
+	#{player_icon_small player:players[(playerIndex + 3) % players.size()], category:category, active:active /}
+	#{/if}
+	#{if players.size() > 6}
+	<a href="@{Application.record(players[(playerIndex + 4) % players.size()].playernumber, category)}" class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
+						
+			<div class="text-nowrap" style="text-align: center;">
+				>>
+				
+			</div>
+						
+	</a>
+	#{/if}
+	 	</div>
+	 	
+	  </div>
+</div><!-- end div player carousel -->
+
+		      #{form @Application.saveQuestionnaire(player.playernumber)}
+		      ${player.questions}
+		      
+
+		      	
+		      #{list items:player.questions, as:'q'}
+		      	<!-- question 1 -->
+		      	<div class="container-fluid">
+		      	<h3>${q.question}${q.questioncategories.name}</h3>
+		      	
+					  <div class="btn-group btn-group-justified" data-toggle="buttons">
+					  #{field 'answer'}
+					    #{list items:q.answers, as:'a'}
+					    
+						    <label class="btn btn-default">
+	    						<input type="radio" name="an${a}" value="${a.id}"> 
+	    						${a.answer}
+	  						</label>
+		      			
+		      			#{/list}
+		      			#{/field}
+					  </div>
+					  <br>
+					</div>
+					
+		      #{/list}
+		      
+		      <!-- the submit button -->
+		      <button class="btn btn-lg btn-primary btn-block" type="submit">Save answers</button>
+		      #{/form}
+
+
+
+
+
+
+</div>
+<!-- end outer container -->

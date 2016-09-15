@@ -39,7 +39,8 @@ public class Player extends Model {
 	public List<PreTrain> preTrain;
 	
 	@OneToMany(mappedBy="player", cascade=CascadeType.ALL)
-	public List<PostTrain> postTrain;
+	public List<Questionnaire> questionnaire;
+	
 	
 	public Player(String playerName, Integer playerNumber, Blob playerPhoto, Client coach){
 		this.playername = playerName;
@@ -53,7 +54,8 @@ public class Player extends Model {
 		
 		this.gpsdata = new ArrayList<GPSData>();
 		this.preTrain = new ArrayList<PreTrain>();
-		this.postTrain = new ArrayList<PostTrain>();
+		this.questionnaire = new ArrayList<Questionnaire>();
+		//this.postTrain = new ArrayList<PostTrain>();
 		this.categories = new TreeSet<Category>();
 		// all players are automatically categorised in All
 		this.categoriseItWith("All");
@@ -86,13 +88,21 @@ public class Player extends Model {
 		return this;
 	}
 	
-	public Player addPostTrain(Date date, String comment, boolean outOfRange, boolean isComplete) {
+	public Player addQuestionnaire(Date date, String answer) {
 		
-		PostTrain postTrain = new PostTrain(this, date, comment, outOfRange, isComplete);
-		this.postTrain.add(postTrain);
+		Questionnaire q = new Questionnaire(this, date);
+		this.questionnaire.add(q);
 		this.save();
 		return this;
 	}
+	
+//	public Player addPostTrain(Date date, String comment, boolean outOfRange, boolean isComplete) {
+//		
+//		PostTrain postTrain = new PostTrain(this, date, comment, outOfRange, isComplete);
+//		this.postTrain.add(postTrain);
+//		this.save();
+//		return this;
+//	}
 	
 	public Player updatePhoto (Blob photo){
 		
@@ -152,6 +162,25 @@ public class Player extends Model {
 		
 	}
 	
+	public static List<Question> findPlayerQuestionsCategorisedWith(String questioncategory, int playernumber){
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT * FROM Question ");
+		sb.append("WHERE id IN ");
+		sb.append("(SELECT questions_id FROM Player_Question pq INNER JOIN Player p ON pq.Player_id = p.id where playernumber = '");
+		sb.append(playernumber);
+		sb.append("') ");
+		sb.append("AND id IN ");
+		sb.append("(SELECT Question_id FROM Question_QuestionCategory qqc INNER JOIN QuestionCategory qc ON qqc.questioncategories_id = qc.id where name = '");
+		sb.append(questioncategory);
+		sb.append("');");//   ');");
+		String queryString = sb.toString();
+		//System.out.println(queryString);
+		Query query = JPA.em().createNativeQuery(queryString, Question.class);//.createNativeQuery(queryString);
+		List<Question> result = query.getResultList();
+		return result;
+
+	}
 
 	
 	/**
@@ -165,10 +194,6 @@ public class Player extends Model {
 	    ).bind("categories", categories).bind("size", categories.length).fetch();
 	}
 	
-//	public Player questionItWith(String q){
-//		questions.add(Question.findOrCreateByName(q));
-//		return this;
-//	}
 	
 	public String toString() {
 	    return playername;

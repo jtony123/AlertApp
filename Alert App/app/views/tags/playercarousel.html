@@ -1,0 +1,92 @@
+*{ Display the standard player carousel}*
+
+<div class="row" id ="player_carousel">
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
+	  
+	  <div class="btn-group btn-group-justified">
+	   				
+	   #{if _players.size() > 5}				
+	   				<a href="@{Application.index(_players[(playerIndex - 4) % _players.size()].playernumber, _category)}" class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
+						<div >
+					
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							<<
+						</div>
+					</a>
+		#{/if}
+	  #{if _players.size() > 5}
+	  #{player_icon_small _player:_players[(playerIndex - 3) % _players.size()], category:category/}
+	  #{/if}
+	  #{if players.size() > 3}
+	  #{player_icon_small _player:_players[(playerIndex - 2) % players.size()], category:category/}
+	  #{/if}
+	  #{if players.size() > 1}
+	  #{player_icon_small _player:_players[(playerIndex - 1) % players.size()], category:category/}
+	  #{/if}		
+	  </div>
+	  </div>
+	  
+	  
+	  
+	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"><p class="text-center"></p>
+	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
+	  			
+					<a href="@{Application.record(player.playernumber)}" class="thumbnail" style="margin-bottom: 0px;">
+						<div >
+						#{if player.playerPhoto.exists()}
+						<img class="img-responsive" src="@{Application.playerPhoto(player.id)}" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
+						#{/if}
+						#{else}
+						<img class="img-responsive" src="@{'public/images/player-headshot.png'}" alt=${player.playername} style="margin: 0 auto; max-width:150px;height:150px"/>
+						#{/else}
+						
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							${player.playername}&nbsp<span class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green"></span>
+							
+						</div>
+						
+					</a>
+<!-- 					<div class="text-center"> -->
+<!-- 					#{list items:player.categories, as:'cat'} -->
+<!-- 						#{if category.equals(cat.name)} -->
+<!-- 		           			<a href="@{Application.index(player.playernumber, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a> -->
+<!-- 		       			#{/if} -->
+<!-- 		       			#{else} -->
+<!-- 		       				<a href="@{Application.index(player.playernumber, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a> -->
+<!-- 		       			#{/else} -->
+<!-- 	       			#{/list} -->
+<!-- 				</div> -->
+				</h4>
+				
+	  </div>
+	  
+	  
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
+	 
+	 	<div class="btn-group btn-group-justified">
+	 		
+	#{if players.size() > 2}
+	#{player_icon_small player:players[(playerIndex + 1) % players.size()], category:category/}
+	#{/if}
+	#{if players.size() > 4}
+	#{player_icon_small player:players[(playerIndex + 2) % players.size()], category:category/}
+	#{/if}
+	#{if players.size() > 6}
+	#{player_icon_small player:players[(playerIndex + 3) % players.size()], category:category/}
+	#{/if}
+	#{if players.size() > 6}
+	<a href="@{Application.index(players[(playerIndex + 4) % players.size()].playernumber, category)}" class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
+						
+			<div class="text-nowrap" style="text-align: center;">
+				>>
+				
+			</div>
+						
+	</a>
+	#{/if}
+	 	</div>
+	 	
+	  </div>
+</div><!-- end div player carousel -->

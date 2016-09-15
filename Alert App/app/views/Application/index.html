@@ -25,6 +25,8 @@ path {
 	fill: lightblue;
 }
 
+
+
 .area {
 /* 	fill : lightblue; */
 /* 	stroke-width: 0; */
@@ -82,7 +84,7 @@ div.tooltip {
 }
 
 div.datatip {   
-  position: absolute;           
+position: absolute;        
   text-align: left;    
   background-color: #778899;       
   width: auto;                  
@@ -92,10 +94,32 @@ div.datatip {
    border: 1px; 
    border-style: solid;      
    border-radius: 12px;           
-  pointer-events: none;         
+  pointer-events: auto;
+   
 }
+
+div.notestip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #778899;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+
+
 th, td {
     padding: 2px;
+}
+
+.cell {
+	color: red;
 }
 
 #datatiptable tr:nth-child(even){
@@ -105,6 +129,31 @@ th, td {
 #datatiptable tr:nth-child(odd){
 	max-width: 100%;
     background-color: #FFFFFF;
+}
+
+
+div.notestip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #778899;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+
+#notestiptable tr:nth-child(even){
+	max-width: 100%;
+    background-color: #F0F8FF;
+}
+#notestiptable tr:nth-child(odd){
+	max-width: 100%;
+    background-color: #EEEEEE;
 }
 
 
@@ -155,7 +204,8 @@ th, td {
 	  
 	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"><p class="text-center"></p>
 	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
-					<a href="@{Application.index(player.playernumber, category)}" class="thumbnail" style="margin-bottom: 0px;">
+	  			
+					<a href="@{Application.record(player.playernumber)}" class="thumbnail" style="margin-bottom: 0px;">
 						<div >
 						#{if player.playerPhoto.exists()}
 						<img class="img-responsive" src="@{Application.playerPhoto(player.id)}" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
@@ -166,7 +216,7 @@ th, td {
 						
 						</div>
 						<div class="text-nowrap" style="text-align: center;">
-							${player.playername}
+							${player.playername}&nbsp<span class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green"></span>
 							
 						</div>
 						
@@ -242,6 +292,9 @@ th, td {
 
 
 <script>
+
+var acuteloadupperthreshold = 1.5,
+	acuteloadlowerthreshold = 0.8;
 
 
 var windowHeight = window.innerHeight|| e.clientHeight|| g.clientHeight;
@@ -417,7 +470,8 @@ var tooltip = d3.select("body").append("div")
 	
 var datatip = d3.select("body").append("div")   
 .attr("class", "datatip")               
-.style("opacity", 0);
+.style("opacity", 0)
+.style("z-index", 999999);
 
 
 
@@ -446,6 +500,58 @@ var datatip = d3.select("body").append("div")
 // 	}) // end data.forEach
 	
 //})
+
+var datatiptable = function(d){
+			
+	var test = d.ACUTE_LOAD > (d.CHRONIC_LOAD * acuteloadupperthreshold) | d.ACUTE_LOAD < (d.CHRONIC_LOAD * acuteloadlowerthreshold);
+	var header = "<table id='"+"datatiptable"+"'><tr><th>Data</th><th>Value</th></tr>";
+	var topline = test ? "<tr><td>Acute Load</td><td class='cell'>"+ (parseInt(d.ACUTE_LOAD * 100))+" : "+ (Math.round((d.ACUTE_LOAD/d.CHRONIC_LOAD)*100)) +"%</td></tr>"
+			: "<tr><td>Acute Load</td><td>"+ (parseInt(d.ACUTE_LOAD * 100))+" : "+ (Math.round((d.ACUTE_LOAD/d.CHRONIC_LOAD)*100)) +"%</td></tr>"
+	var text = header.concat(topline);
+	text = text.concat(
+	"<tr><td>Chronic Load</td><td>"+ (parseInt(d.CHRONIC_LOAD * 100)) +"</td></tr>" +
+	"<tr><td>Player Load </td><td>"+ (parseInt(d.T_PLAYER_LOAD * 100)) +"</td></tr>" +
+	"<tr><td>Acc/Dec Load</td><td>"+ (parseInt(d.T_ACC_DEC_LOAD * 100)) +"</td></tr>" +
+	"<tr><td>RPE Score</td><td>"+ (parseInt(d.pExertion)) +"</td></tr>" +
+	"<tr><td>Sleep</td><td>"+ (parseInt(d.sleep)) +"</td></tr>" +
+	"<tr><td>Muscle Soreness</td><td>"+ (parseInt(d.muscleSoreness)) +"</td></tr>" +
+	"<tr><td>Heart Rate Exertion</td><td>"+ (parseInt(d.T_HEART_RATE_EXERTION * 10)) +"</td></tr>" +
+	"<tr><td>Notes</td><td><a title='this shows the full notes' href='#' onclick='moreNotes(); return false;'>"+ "click for notes" +"</a></td></tr>" +
+	"</table>");
+  		return text;
+}
+
+var moreNotes = function(d){
+			
+	    		datatip.transition()
+				.duration(100)
+				.style("opacity", 0.9)
+				.style("color", "#2F4F4F")
+				.style("border-color", "#667788");
+	    		
+	    		// here we test if there are new notes available for this player
+	    		if(${player.playernumber} > 5) {
+	    		datatip .html("<table id='"+"notestiptable"+"'><tr><th>Date</th><th>Notes taken</th></tr>"
+	    				+ "<tr><td>most recent</td><td>the note</td></tr>"
+	    				
+	    				+ "<tr><td>second most recent</td><td>the note</td></tr>"
+	    				+ "<tr><td>etc..</td><td>etc...</td></tr></table>"
+	    				
+	    		
+	    		)
+	    		} else {
+	    			datatip .html("<table id='"+"notestiptable"+"'><tr><th>Date</th><th>Notes taken</th></tr>"
+		    				
+		    				+ "<tr><td>etc..</td><td>etc...</td></tr></table>"
+		    				
+		    		
+		    		)
+	    		}
+				//.style("left", (d3.event.pageX + 50) + "px")
+				//.style("top", (d3.event.pageY -350) + "px")
+				;
+	    	
+		}
 
 var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(error, data) {
 	
@@ -479,7 +585,7 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	
 	
 	// by default on start up - showing last 28 days of data
-	var daysShown = 28;
+	var daysShown = width > 1200 ? 56:28;
 	xScale.domain([data[data.length - daysShown -1].date,
 	               data[data.length -1].date
 	               ]);
@@ -505,7 +611,7 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	    re_draw_chart();
 	});
 	
-	// add a rectangle over the bottom half of the chart for zooming    
+	// add a rectangle over the chart for zooming    
 	innersvg.append('rect')
 		.attr("id", "zoomrect")
 		.attr("y", 0)
@@ -527,11 +633,6 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	
 	function draw_chart() {
 		
-
-		
-
-		
-
 		// add the squad deviation over line
 		innersvg.append("path")
 		.attr("class", "line")
@@ -610,38 +711,26 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 		.style("fill", "none")
 		.attr("d", acuteloadline(data));
 
+
 		// adding the flags to the acute line
 		innersvg.selectAll(".flag")
 		.data(data)
 		.enter()
 		.append("path")
+		// only apply the flags if the data point out of range
  		.filter(function(d){
- 			return d.ACUTE_LOAD > (d.CHRONIC_LOAD * 1.5) | d.ACUTE_LOAD < (d.CHRONIC_LOAD * 0.8) ? d.ACUTE_LOAD : null;
+ 			return d.ACUTE_LOAD > (d.CHRONIC_LOAD * acuteloadupperthreshold) 
+ 				| d.ACUTE_LOAD < (d.CHRONIC_LOAD * acuteloadlowerthreshold) ? d.ACUTE_LOAD : null;
  		})
 		.attr("class", "flag")
 		.attr("id", "AcuteUPFlags")
 		.attr("d", d3.svg.symbol().type( function(d){
-			return d.ACUTE_LOAD > (d.CHRONIC_LOAD * 1.5) ? 	"triangle-up" : "triangle-down";	})
+			// point the triangle up if exceeding the threshold, down otherwise
+			return d.ACUTE_LOAD > (d.CHRONIC_LOAD * acuteloadupperthreshold) ? 	"triangle-up" : "triangle-down";	})
 			.size(20))
-		
+		// offset up by 5 if exceeding threshold, down by 5 otherwise
 		.attr("transform", function(d) { 
-			return "translate(" + xScale(d.date) + "," + (y(d.ACUTE_LOAD) + (d.ACUTE_LOAD > (d.CHRONIC_LOAD * 1.5) ? 5 : -5)) + ")" });
-		
-		
-		
-		
-		
-		// drawing circles
-// 		.append("circle")
-// 		.filter(function(d){
-// 			return d.ACUTE_LOAD > (d.CHRONIC_LOAD * 1.5) ? d.ACUTE_LOAD : null;
-// 		})
-// 		.attr("id", "ACFlags")
-// 		.style("fill", "red")
-// 		.attr("r", 5)
-// 		.attr("cx", function(d){return xScale(d.date);})
-// 		.attr("cy", function(d) { return y(d.ACUTE_LOAD); });
-		
+			return "translate(" + xScale(d.date) + "," + (y(d.ACUTE_LOAD) + (d.ACUTE_LOAD > (d.CHRONIC_LOAD * acuteloadupperthreshold) ? 5 : -5)) + ")" });
 		
 		
 		
@@ -657,16 +746,16 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 		.attr("d", accdecloadline(data));
 		
 		// add dots to the acc/dec load line
-	    innersvg.selectAll("dot")
-    	.data(data)
-  		.enter().append("circle")
-  		.attr("id", "ACCDECLoadDot")
-    	.attr("r", 2.5)
-    	.style("stroke", "blue")
-    	.style("opacity", 0)
-    	.style("fill", "#FBFBFB")
-    	.attr("cx", function(d) { return xScale(d.date); })
-    	.attr("cy", function(d) { return y(d.T_ACC_DEC_LOAD); });
+// 	    innersvg.selectAll("dot")
+//     	.data(data)
+//   		.enter().append("circle")
+//   		.attr("id", "ACCDECLoadDot")
+//     	.attr("r", 2.5)
+//     	.style("stroke", "blue")
+//     	.style("opacity", 0)
+//     	.style("fill", "#FBFBFB")
+//     	.attr("cx", function(d) { return xScale(d.date); })
+//     	.attr("cy", function(d) { return y(d.T_ACC_DEC_LOAD); });
 		
 		// add the rpe load path line
 		innersvg.append("path")
@@ -686,6 +775,7 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 			.attr("id", "Sleep")
 			// setting the stroke width on the fly
 			.attr("stroke-width", 1)
+			.style("stroke", "steelblue")
 			.style("fill", "none")
 			.attr("d", sleepline(data));
 	
@@ -702,6 +792,41 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 			.style("stroke", "orange")
 			.style("fill", "none")
 			.attr("d", heartrateline(data));
+		
+		///
+// 		var squadacuteloadline = d3.svg.line()
+// 		.interpolate("cardinal")
+// 		.x(function(d) { return xScale(d.date); })
+// 		.y(function(d) { return y(d.SQUAD_LOAD); });
+		
+		// add sensor dots to the squad avverage line
+		innersvg.selectAll("dot")
+    	.data(data)
+  		.enter().append("circle")
+  		.attr("id", "SquadLoadDot")
+    	.attr("r", 20)
+    	.style("opacity", 0)
+    	.attr("cx", function(d) { return xScale(d.date); })
+    	.attr("cy", function(d) { return y(d.SQUAD_LOAD); })
+		
+		.on("mouseover", function(d) {
+			tooltip.transition()
+				.duration(200)
+				.style("opacity", 0.9)
+				.style("color", "green")
+				.style("background", "rgba(128,0,128, 0.1)")
+				.style("border-color", "green");
+			tooltip .html("Squad Mean Load : " + (d.SQUAD_LOAD * 100))
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY -50) + "px");
+			})
+		.on("mouseout", function(d) {       
+			tooltip.transition()        
+                .duration(500)      
+                .style("opacity", 0);
+		});
+		
+		
 		
 		// add dots to the player load line
 	    innersvg.selectAll("dot")
@@ -731,8 +856,10 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 		})
 		.on("click", function(d) {
 			// remove the tooltip
+			
 			tooltip    
             .style("opacity", 0);
+			
 		
     		datatip.transition()
 			.duration(100)
@@ -740,22 +867,14 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 			.style("color", "#2F4F4F")
 			.style("border-color", "#778899");
     		
-    		datatip .html("<table id='"+"datatiptable'"+"><tr><th>Data</th><th>Value</th></tr>" +
-    				"<tr><td>Acute Load</td><td>"+ (parseInt(d.ACUTE_LOAD * 100))+" : "+ (Math.round((d.ACUTE_LOAD/d.CHRONIC_LOAD)*100)) +"%</td></tr>" +
-    				"<tr><td>Chronic Load</td><td>"+ (parseInt(d.CHRONIC_LOAD * 100)) +"</td></tr>" +
-    				"<tr><td>Player Load </td><td>"+ (parseInt(d.T_PLAYER_LOAD * 100)) +"</td></tr>" +
-    				"<tr><td>Acc/Dec Load</td><td>"+ (parseInt(d.T_ACC_DEC_LOAD * 100)) +"</td></tr>" +
-    				"<tr><td>RPE Score</td><td>"+ (parseInt(d.pExertion)) +"</td></tr>" +
-    				"<tr><td>Sleep</td><td>"+ (parseInt(d.sleep)) +"</td></tr>" +
-    				"<tr><td>Muscle Soreness</td><td>"+ (parseInt(d.muscleSoreness)) +"</td></tr>" +
-    				"<tr><td>Heart Rate Exertion</td><td>"+ (parseInt(d.T_HEART_RATE_EXERTION * 10)) +"</td></tr>" +
-    				"<tr><td>Notes</td><td>"+ "click for notes" +"</td></tr>" +
-    				"</table")
-    				
+    		datatip .html(datatiptable(d))
 			.style("left", (d3.event.pageX) + "px")
-			.style("top", (d3.event.pageY -250) + "px");
+			.style("top", (d3.event.pageY -250) + "px")
+			;
     		
 		});
+		
+
 		
 		// add dots to the Acute Load line
 	    innersvg.selectAll("dot")
@@ -793,18 +912,7 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 			.style("color", "#2F4F4F")
 			.style("border-color", "#778899");
     		
-    		datatip .html("<table id='"+"datatiptable'"+"><tr><th>Data</th><th>Value</th></tr>" +
-    				"<tr><td>Acute Load</td><td>"+ (parseInt(d.ACUTE_LOAD * 100))+" : "+ (Math.round((d.ACUTE_LOAD/d.CHRONIC_LOAD)*100)) +"%</td></tr>" +
-    				"<tr><td>Chronic Load</td><td>"+ (parseInt(d.CHRONIC_LOAD * 100)) +"</td></tr>" +
-    				"<tr><td>Player Load </td><td>"+ (parseInt(d.T_PLAYER_LOAD * 100)) +"</td></tr>" +
-    				"<tr><td>Acc/Dec Load</td><td>"+ (parseInt(d.T_ACC_DEC_LOAD * 100)) +"</td></tr>" +
-    				"<tr><td>RPE Score</td><td>"+ (parseInt(d.pExertion)) +"</td></tr>" +
-    				"<tr><td>Sleep</td><td>"+ (parseInt(d.sleep)) +"</td></tr>" +
-    				"<tr><td>Muscle Soreness</td><td>"+ (parseInt(d.muscleSoreness)) +"</td></tr>" +
-    				"<tr><td>Heart Rate Exertion</td><td>"+ (parseInt(d.T_HEART_RATE_EXERTION * 10)) +"</td></tr>" +
-    				"<tr><td>Notes</td><td>"+ "click for notes" +"</td></tr>" +
-    				"</table")
-    				
+    		datatip .html(datatiptable(d))
 			.style("left", (d3.event.pageX) + "px")
 			.style("top", (d3.event.pageY -250) + "px");
     		
@@ -897,13 +1005,6 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 	    )
 	    
 
-	  
-
-	
-
-		
-		
-		
 		
 		// function that draws middle(above chart) box buttons
 		function drawAuxButton(buttontext, buttonid, bordercolor, lineid, i, toggled){

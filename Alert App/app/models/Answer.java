@@ -18,6 +18,10 @@ public class Answer extends Model {
 	@ManyToOne
 	public PreTrain preTrain;
 	
+	@ManyToOne
+	public Questionnaire questionnaire;
+	
+	
 	@Required
 	public String answer;
 	

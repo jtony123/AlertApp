@@ -17,7 +17,8 @@ POST    /login                      			Secure.authenticate()
 
 
 # Dashboard page
-GET     /players/{<[0-9]+>id}                  	Application.show
+# GET     /players/{<[0-9]+>id}                  	Application.show
+GET     /players/{<[0-9]+>id}                  	Application.record
 GET		/players/{cat}							Application.listCategory
 
 
