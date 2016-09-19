@@ -15,8 +15,6 @@ public class Answer extends Model {
 	@ManyToOne
 	public Question question;
 	
-	@ManyToOne
-	public PreTrain preTrain;
 	
 	@ManyToOne
 	public Questionnaire questionnaire;

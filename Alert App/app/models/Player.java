@@ -35,8 +35,6 @@ public class Player extends Model {
 	@OneToMany(mappedBy="player", cascade=CascadeType.ALL)
 	public List<GPSData> gpsdata;
 	
-	@OneToMany(mappedBy="player", cascade=CascadeType.ALL)
-	public List<PreTrain> preTrain;
 	
 	@OneToMany(mappedBy="player", cascade=CascadeType.ALL)
 	public List<Questionnaire> questionnaire;
@@ -53,9 +51,7 @@ public class Player extends Model {
 		this.dateadded = new Date();
 		
 		this.gpsdata = new ArrayList<GPSData>();
-		this.preTrain = new ArrayList<PreTrain>();
 		this.questionnaire = new ArrayList<Questionnaire>();
-		//this.postTrain = new ArrayList<PostTrain>();
 		this.categories = new TreeSet<Category>();
 		// all players are automatically categorised in All
 		this.categoriseItWith("All");
@@ -66,27 +62,16 @@ public class Player extends Model {
 
 	
 
-	public Player addGPSData(Date inputDate, int dayNumber, int tT_Time, int tT_Distance, int tHigh_Intensity_Distance) {
+	public Player addGPSData(Date inputDate) {
 		
 		GPSData newGPSData = new GPSData(this);
 		newGPSData.inputDate=inputDate;
-		newGPSData.dayNumber=dayNumber;
-		newGPSData.tT_Time=tT_Time;
-		newGPSData.tT_Distance=tT_Distance;
-		newGPSData.tHigh_Intensity_Distance=tHigh_Intensity_Distance;
-		
 	    this.gpsdata.add(newGPSData);
 	    this.save();
 	    return this;
 	}
 	
-	public Player addPreTrain(Date date, String answer, boolean isComplete) {
-		
-		PreTrain preTrain = new PreTrain(this, date, isComplete);
-		this.preTrain.add(preTrain);
-		this.save();
-		return this;
-	}
+
 	
 	public Player addQuestionnaire(Date date, String answer) {
 		
@@ -96,13 +81,6 @@ public class Player extends Model {
 		return this;
 	}
 	
-//	public Player addPostTrain(Date date, String comment, boolean outOfRange, boolean isComplete) {
-//		
-//		PostTrain postTrain = new PostTrain(this, date, comment, outOfRange, isComplete);
-//		this.postTrain.add(postTrain);
-//		this.save();
-//		return this;
-//	}
 	
 	public Player updatePhoto (Blob photo){
 		
@@ -162,6 +140,30 @@ public class Player extends Model {
 		
 	}
 	
+	public static List<QuestionCategory> findPlayerQuestionsCategories(int playernumber){
+		
+//		SELECT * FROM QuestionCategory
+//		WHERE id IN
+//		(SELECT questioncategories_id FROM Question_QuestionCategory qqc JOIN Question q ON qqc.Question_id = q.id
+//		WHERE Question_id IN
+//		(SELECT questions_id FROM Player_Question pq INNER JOIN Player p ON pq.Player_id = p.id where playernumber = '5'));
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT * FROM QuestionCategory ");
+		sb.append("WHERE id IN ");
+		sb.append("(SELECT questioncategories_id FROM Question_QuestionCategory qqc JOIN Question q ON qqc.Question_id = q.id ");
+		sb.append("WHERE Question_id IN ");
+		sb.append("(SELECT questions_id FROM Player_Question pq INNER JOIN Player p ON pq.Player_id = p.id where playernumber = '");
+		sb.append(playernumber);
+		sb.append("'));");
+		
+		String queryString = sb.toString();
+		System.out.println(queryString);
+		Query query = JPA.em().createNativeQuery(queryString, QuestionCategory.class);//.createNativeQuery(queryString);
+		List<QuestionCategory> result = query.getResultList();
+		return result;
+	}
+	
 	public static List<Question> findPlayerQuestionsCategorisedWith(String questioncategory, int playernumber){
 
 		StringBuilder sb = new StringBuilder();
@@ -175,7 +177,6 @@ public class Player extends Model {
 		sb.append(questioncategory);
 		sb.append("');");//   ');");
 		String queryString = sb.toString();
-		//System.out.println(queryString);
 		Query query = JPA.em().createNativeQuery(queryString, Question.class);//.createNativeQuery(queryString);
 		List<Question> result = query.getResultList();
 		return result;

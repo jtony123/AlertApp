@@ -38,6 +38,8 @@ public class Application extends Controller {
 
     
     public static void index(int playernumber, String category) {
+    	
+    	System.out.println(playernumber + " - " + category);
 
     	List<Player> players;
     	if(category==null){
@@ -52,7 +54,21 @@ public class Application extends Controller {
     		player = players.get(0);
     	} else {
     		player = Player.find("byPlayernumber", playernumber).first();
+    		Category cat = Category.find("byName", category).first();
+    		if (!player.categories.contains(cat)){
+    			List<Player> playersInThisCategory = Player.findClientsPlayersCategorisedWith(connectedClient, category);
+    			if(playersInThisCategory.isEmpty()){
+    				player = Player.find("byPlayername", "no players").first();
+    			} else {
+    				System.out.println("here");
+    				player = playersInThisCategory.get(0);
+    			}
+    		}
+    		//
     	}
+    	System.out.println("no is "+player.playernumber);
+    	
+    	//if(player.categories.contains(o))
 
     	int playerIndex = players.indexOf(player);
     	
@@ -135,7 +151,7 @@ public class Application extends Controller {
  
     }
     
-    public static void record(int playernumber, String category) {
+    public static void record(int playernumber, String category, String questioncategoryrequested) {
     	
     	List<Player> players;
     	if(category==null){
@@ -152,19 +168,52 @@ public class Application extends Controller {
     		player = Player.find("byPlayernumber", playernumber).first();
     	}
     	
+    	
+    	
+//    	QuestionCategory qc = QuestionCategory.find("byName", "pretrain").first();
+//    	System.out.println("qc = "+qc.name);
+    	
+
+    	
+    	
+//    	System.out.println("qc = "+qc.questionCategory +" - " + qc.question.question);
+//        
+//    	System.out.println("getting pretrain questions");
+//    	List<Question> pretrains = Question.findCategorisedWith("PreTrain");
+//        for(Question q : pretrains){
+//        	System.out.println(q.question);
+//        	for(Answer a : q.answers){
+//        		System.out.print(" - "+a.answer);
+//        	}
+//        	System.out.println();
+//        	
+//        }
+//        
+//        System.out.println();
+//        System.out.println("getting players questions");
+//    	Set<Question> playerquestions = player.questions;
+//        for(Question q : playerquestions){
+//        	System.out.println(q.question);
+//        	for(Answer a : q.answers){
+//        		System.out.print(" - "+a.answer);
+//        	}
+//        	System.out.println();
+//        	
+//        }
         
-    	System.out.println();
-        System.out.println(player.playername);
-        System.out.println("getting players categorised questions");
-        List<Question> playerquestions1 = player.findPlayerQuestionsCategorisedWith("PreTrain", player.playernumber);
-        
-        for(Question q : playerquestions1){
-        	System.out.println(q.question);
-        	for(Answer a : q.answers){
-        		System.out.print(" - "+a.answer);
-        	}
-        	System.out.println();
-        }
+    	List<QuestionCategory> questioncategories = player.findPlayerQuestionsCategories(player.playernumber);
+    	for(QuestionCategory qcat : questioncategories){
+    		System.out.println("name = " +qcat.name+" - ");
+    	}
+    	
+    	List<Question> categoryquestions = null;
+    	if (questioncategoryrequested != null){
+    		categoryquestions = player.findPlayerQuestionsCategorisedWith(questioncategoryrequested, player.playernumber);
+    	} else {
+    		if(questioncategories.size() > 0) {
+    		categoryquestions = player.findPlayerQuestionsCategorisedWith(questioncategories.get(0).name, player.playernumber);
+    		} 
+    	}
         
     	int playerIndex = players.indexOf(player);
     	
@@ -187,7 +236,7 @@ public class Application extends Controller {
     	
     	String active = "record";
 		//render(active, player, preTraindeadline, postTraindeadline, gpsdataDeadline);
-		render(active, categories, category, player, playerIndex, players, preTraindeadline, postTraindeadline, gpsdataDeadline);
+		render(active, categories, category, questioncategories, categoryquestions, player, playerIndex, players, preTraindeadline, postTraindeadline, gpsdataDeadline);
 
 }
 
@@ -209,7 +258,7 @@ public class Application extends Controller {
     	}
     	
     	++playernumber;
-    	record(playernumber, "All");
+    	record(playernumber, "All", null);
     }
     
     

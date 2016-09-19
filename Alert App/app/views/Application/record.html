@@ -112,41 +112,166 @@
 	  </div>
 </div><!-- end div player carousel -->
 
-		      #{form @Application.saveQuestionnaire(player.playernumber)}
-		      ${player.questions}
-		      
 
-		      	
-		      #{list items:player.questions, as:'q'}
-		      	<!-- question 1 -->
-		      	<div class="container-fluid">
-		      	<h3>${q.question}${q.questioncategories.name}</h3>
-		      	
-					  <div class="btn-group btn-group-justified" data-toggle="buttons">
-					  #{field 'answer'}
-					    #{list items:q.answers, as:'a'}
-					    
-						    <label class="btn btn-default">
-	    						<input type="radio" name="an${a}" value="${a.id}"> 
-	    						${a.answer}
-	  						</label>
-		      			
-		      			#{/list}
-		      			#{/field}
-					  </div>
-					  <br>
-					</div>
-					
-		      #{/list}
-		      
-		      <!-- the submit button -->
-		      <button class="btn btn-lg btn-primary btn-block" type="submit">Save answers</button>
-		      #{/form}
+<style>
+
+.questionbox {
+	border:1px solid #cecece; 
+	border-radius: 20px; 
+	margin:20px; 
+	box-shadow: 0px 0px 10px grey;
+}
+
+#mainquestion {
+  border: 1px solid #cecece;
+  display: -webkit-flex; /* Safari */
+  -webkit-justify-content: space-between; /* Safari 6.1+ */
+  display: flex;
+  justify-content: space-between;
+}
+
+#mainquestion div {
+   width: auto; 
+  height: auto;
+}
+
+.label {
+    display: inline-block;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+</style>
+
+<ul class="nav nav-tabs nav-justified">
+#{if questioncategories.size() > 0}
+
+	#{list items:questioncategories, as:'qcs'}
+	#{if qcs_isFirst}
+	  <li class="active">
+	  	<a href="@{Application.record(player.playernumber, category, qcs.name)}" style="max-width: 700px;">${qcs.name}</a>
+	  </li>
+	  #{/if}
+	  #{else}
+	  <li>
+	  <a href="@{Application.record(player.playernumber, category, qcs.name)}" style="max-width: 700px;">${qcs.name}</a>
+	  </li>
+	  #{/else}
+	  
+	#{/list}
+#{/if}
+
+</ul>
+
+
+#{form @Application.saveQuestionnaire(player.playernumber)}
+<div class="questionbox" id="mainquestion" style="background-color: white;">
+
+#{list items:categoryquestions, as:'q'}
+
+  <div class="questionbox" style="background-color:#FBFBFB; align-content:center;">
+  <p style="text-align: center;">${q.question}?</p>
+  <br>
+
+  	#{field 'answer'}
+		  #{list items:q.answers, as:'a'}
+		  	<label class="btn btn-default" class="label" data-toggle="buttons" style="width:300px; max-width:200px; margin:10px;">
+				<input type="radio" name="an${a}" value="${a.id}"> 
+				<p>${a.answer}</p>
+			</label>
+			<br>
+		  #{/list}
+	  #{/field}
+  </div>
+  
+ #{/list}
+</div>
+  <!-- the submit button -->
+<button class="btn btn-lg btn-primary btn-block" type="submit">Save answers</button>
+#{/form}
 
 
 
+<p>
+  <label for="nRadius" 
+         style="display: inline-block; width: 240px; text-align: right">
+         radius = <span id="nRadius-value">…</span>
+  </label>
+  <input type="range" min="0" max="5" id="nRadius" style="background-color:red">
+</p>
+
+<script>
+
+var width = 600;
+var height = 300;
+ 
+var holder = d3.select("body")
+      .append("svg")
+      .attr("width", width)    
+      .attr("height", height); 
+
+// draw the circle
+holder.append("circle")
+  .attr("cx", 300)
+  .attr("cy", 150) 
+  .style("fill", "none")   
+  .style("stroke", "blue") 
+  .attr("r", 1);
+
+// when the input range changes update the circle 
+d3.select("#nRadius").on("input", function() {
+  update(+this.value);
+});
+
+// Initial starting radius of the circle 
+update(1);
+
+// update the elements
+function update(nRadius) {
+
+  // adjust the text on the range slider
+  d3.select("#nRadius-value").text(nRadius);
+  d3.select("#nRadius").property("value", nRadius);
+
+  // update the circle radius
+  holder.selectAll("circle") 
+    .attr("r", nRadius*10);
+}
+
+</script>
 
 
 
 </div>
 <!-- end outer container -->
+
+<!-- 		   #{form @Application.saveQuestionnaire(player.playernumber)} -->
+		      
+<!-- 		      #{list items:player.questions, as:'q'} -->
+<!-- 		      	question 1 -->
+<!-- 		      	<div class="container-fluid"> -->
+<!-- 		      	<h3>${q.question}${q.questioncategories.name}</h3> -->
+		      	
+<!-- 					  <div class="btn-group btn-group-justified" data-toggle="buttons"> -->
+<!-- 					  #{field 'answer'} -->
+<!-- 					    #{list items:q.answers, as:'a'} -->
+					    
+<!-- 						    <label class="btn btn-default"> -->
+<!-- 	    						<input type="radio" name="an${a}" value="${a.id}">  -->
+<!-- 	    						${a.answer} -->
+<!-- 	  						</label> -->
+		      			
+<!-- 		      			#{/list} -->
+<!-- 		      			#{/field} -->
+<!-- 					  </div> -->
+<!-- 					  <br> -->
+<!-- 					</div> -->
+					
+<!-- 		      #{/list} -->
+		      
+<!-- 		      the submit button -->
+<!-- 		      <button class="btn btn-lg btn-primary btn-block" type="submit">Save answers</button> -->
+<!-- 		      #{/form} -->

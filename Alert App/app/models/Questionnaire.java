@@ -26,6 +26,8 @@ public class Questionnaire extends Model {
 	
 	public String notes;
 	
+	public String injurylog;
+	
 	@OneToMany(mappedBy="questionnaire", cascade=CascadeType.ALL)
 	public List<Answer> answers;
 	
@@ -40,6 +42,11 @@ public class Questionnaire extends Model {
 	
 	public void addPlayerQuestionnaireNote(String note) {
 		this.notes = note;
+		this.save();
+	}
+	
+	public void addPlayerQuestionnaireInjuryLog(String injurylog) {
+		this.injurylog = injurylog;
 		this.save();
 	}
 	
