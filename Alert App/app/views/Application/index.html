@@ -156,6 +156,56 @@ position: absolute;
     background-color: #EEEEEE;
 }
 
+#player_icon {
+  position: relative;
+  perspective: 1000;
+}
+
+#player_icon_card {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  
+   -webkit-animation-name: player_icon_flip; /* Chrome, Safari, Opera */
+    -webkit-animation-duration: 2s; /* Chrome, Safari, Opera */
+    animation-name: player_icon_flip;
+    animation-duration: 12s;
+     animation-delay: 2s;
+/*      animation-direction: alternate; */
+    animation-iteration-count: 2;
+  
+}
+
+@-webkit-keyframes player_icon_flip {
+
+	10% { transform: rotateY(180deg);}
+	20% { transform: rotateY(0deg);}
+	60% { transform: rotateY(0deg);}
+	70% { transform: rotateY(180deg);}
+	80% { transform: rotateY(0deg);}
+}
+
+#player_icon:hover #player_icon_card {
+-webkit-animation: none;
+  transform: rotateY(180deg);
+  box-shadow: -5px 5px 5px #aaa;
+}
+
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+.face.back {
+  display: block;
+  transform: rotateY(180deg);
+  box-sizing: border-box;
+  color: red;
+  text-align: center;
+  background-color: #aaa;
+}
+
 
 
 </style>
@@ -172,6 +222,8 @@ position: absolute;
 	    #{/list}
 	</div>
 </div>
+
+
 
 <div class="row" id ="player_carousel">
 	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
@@ -202,7 +254,10 @@ position: absolute;
 	  
 	  
 	  
-	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"><p class="text-center"></p>
+	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" id="player_icon">
+	  	<div id="player_icon_card">
+	  		<div class="front face">
+	  		
 	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
 	  			
 					<a href="@{Application.record(player.playernumber)}" class="thumbnail" style="margin-bottom: 0px;">
@@ -211,30 +266,42 @@ position: absolute;
 						<img class="img-responsive" src="@{Application.playerPhoto(player.id)}" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
 						#{/if}
 						#{else}
-						<img class="img-responsive" src="@{'public/images/player-headshot.png'}" alt=${player.playername} style="margin: 0 auto; max-width:150px;height:150px"/>
+						<img class="img-responsive" src="@{'public/images/player-headshot.png'}" alt=${player.playername} style="margin: 0 auto; max-width:150px;height:150px;"/>
 						#{/else}
 						
 						</div>
 						<div class="text-nowrap" style="text-align: center;">
-							${player.playername}&nbsp<span class="glyphicon glyphicon-plus" aria-hidden="true" style="color:green"></span>
+							${player.playername}
+						</div>
+					</a>
+				</h4>
+			</div> <!-- end front face -->
+			
+			<div class="back face">
+				<h4 style="margin-bottom: 5px; margin-top:5px;">
+	  			
+					<a href="@{Application.record(player.playernumber)}" class="thumbnail" style="margin-bottom: 0px;">
+						
+						<div style="margin: 0 auto; max-width:150px;height:150px;">
+						alerts go here<br>
+						alert 1<br>
+						alert 2<br>
+						<a href="@{Application.record(player.playernumber)}" class="btn btn-info btn-lg">
+          				<span class="glyphicon glyphicon-plus"></span> Add data
+        				</a>
+						
+						</div>
+						
+						<div class="text-nowrap" style="text-align: center;">
+							${player.playername}
 							
 						</div>
 						
 					</a>
-<!-- 					<div class="text-center"> -->
-<!-- 					#{list items:player.categories, as:'cat'} -->
-<!-- 						#{if category.equals(cat.name)} -->
-<!-- 		           			<a href="@{Application.index(player.playernumber, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a> -->
-<!-- 		       			#{/if} -->
-<!-- 		       			#{else} -->
-<!-- 		       				<a href="@{Application.index(player.playernumber, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a> -->
-<!-- 		       			#{/else} -->
-<!-- 	       			#{/list} -->
-<!-- 				</div> -->
 				</h4>
-				
+			</div>
+			</div>
 	  </div>
-	  
 	  
 	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
 	 
@@ -267,7 +334,6 @@ position: absolute;
 	
 	<!-- the panel below the pagination carousel -->
 	
-
 
 
 <div class="chart" class="container-fluid" id="main_chart"  style="border:1px solid #cecece; border-radius: 20px;
@@ -1009,7 +1075,7 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 		// function that draws middle(above chart) box buttons
 		function drawAuxButton(buttontext, buttonid, bordercolor, lineid, i, toggled){
 			
-			var numButtonsToggle2 = 9;
+			var numButtonsToggle2 = 11;
 			var buttonOffset = width/(numButtons + 1);
 
 			var abutton;
@@ -1070,14 +1136,14 @@ var dataset = d3.csv("@{Application.getCSV(player.playernumber)}", function(erro
 			
 		} // end drawAuxButton
 		
-		drawAuxButton("CATAPULT", "Catapult_Button", "black", "", 1, true);
-		drawAuxButton("OPTOJUMP", "Optojump_Button", "black", "", 2, true);
-		drawAuxButton("BIOMARKERS", "Biomarkers_Button", "black", "", 3, true);
-		drawAuxButton("TRAVEL STRESS", "TravelStress_Button", "black", "", 4, true);
-		drawAuxButton("UTC", "Utc_Button", "black", "", 5, true);
-		drawAuxButton("VLOS", "Vlos_Button", "black", "", 6, true);
-		drawAuxButton("SPORTS VU", "SportsVu_Button", "black", "", 7, true);
-		drawAuxButton("FUSIONETICS", "Fusionetics_Button", "black", "", 8, true);
+		drawAuxButton("CATAPULT", "Catapult_Button", "black", "", 0, true);
+		drawAuxButton("OPTOJUMP", "Optojump_Button", "black", "", 1, true);
+		drawAuxButton("BIOMARKERS", "Biomarkers_Button", "black", "", 2, true);
+		drawAuxButton("TRAVEL STRESS", "TravelStress_Button", "black", "", 3, true);
+		drawAuxButton("UTC", "Utc_Button", "black", "", 7.5, true);
+		drawAuxButton("VLOS", "Vlos_Button", "black", "", 8.5, true);
+		drawAuxButton("SPORTS VU", "SportsVu_Button", "black", "", 9.5, true);
+		drawAuxButton("FUSIONETICS", "Fusionetics_Button", "black", "", 10.5, true);
 		
 		
 		var numButtons = 7;

@@ -1,6 +1,89 @@
 #{extends 'main.html' /}
 #{set title:player /}
 
+<style>
+
+.questionbox {
+	border:1px solid #cecece; 
+	border-radius: 20px; 
+	margin:20px; 
+	box-shadow: 0px 0px 10px grey;
+}
+
+#mainquestion {
+  border: 1px solid #cecece;
+  display: -webkit-flex; /* Safari */
+  -webkit-justify-content: space-between; /* Safari 6.1+ */
+  display: flex;
+  justify-content: space-between;
+}
+
+#mainquestion div {
+   width: auto; 
+  height: auto;
+}
+
+.label {
+    display: inline-block;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+#player_icon {
+  position: relative;
+  perspective: 1000;
+}
+
+#player_icon_card {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  
+   -webkit-animation-name: player_icon_flip; /* Chrome, Safari, Opera */
+    -webkit-animation-duration: 2s; /* Chrome, Safari, Opera */
+    animation-name: player_icon_flip;
+    animation-duration: 12s;
+     animation-delay: 2s;
+/*      animation-direction: alternate; */
+    animation-iteration-count: 2;
+  
+}
+
+@-webkit-keyframes player_icon_flip {
+
+	10% { transform: rotateY(180deg);}
+	20% { transform: rotateY(0deg);}
+	60% { transform: rotateY(0deg);}
+	70% { transform: rotateY(180deg);}
+	80% { transform: rotateY(0deg);}
+}
+
+#player_icon:hover #player_icon_card {
+-webkit-animation: none;
+  transform: rotateY(180deg);
+  box-shadow: -5px 5px 5px #aaa;
+}
+
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+.face.back {
+  display: block;
+  transform: rotateY(180deg);
+  box-sizing: border-box;
+  color: red;
+  text-align: center;
+  background-color: #aaa;
+}
+
+</style>
+
 <div class="container-fluid" id="outer_container" style="background-color: #FBFBFB">
 
 <!-- insert the standard nav bar -->
@@ -48,42 +131,49 @@
 	  </div>
 	  </div>
 	  
-	  
-	  
-	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"><p class="text-center"></p>
+	  	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" id="player_icon">
+	  	<div id="player_icon_card">
+	  		<div class="front face">
+	  		
 	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
 	  			
 					<a href="@{Application.record(player.playernumber)}" class="thumbnail" style="margin-bottom: 0px;">
-						<div >
+						<div>
 						#{if player.playerPhoto.exists()}
 						<img class="img-responsive" src="@{Application.playerPhoto(player.id)}" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
 						#{/if}
 						#{else}
-						<img class="img-responsive" src="@{'public/images/player-headshot.png'}" alt=${player.playername} style="margin: 0 auto; max-width:150px;height:150px"/>
+						<img class="img-responsive" src="@{'public/images/player-headshot.png'}" alt=${player.playername} style="margin: 0 auto; max-width:150px;height:150px;"/>
 						#{/else}
 						
 						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							${player.playername}
+						</div>
+					</a>
+				</h4>
+			</div> <!-- end front face -->
+			
+			<div class="back face">
+				<h4 style="margin-bottom: 5px; margin-top:5px;">
+	  			
+					<a href="@{Application.index(player.playernumber)}" class="thumbnail" style="margin-bottom: 0px;">
+						
+						<div style="margin: 0 auto; max-width:150px;height:150px;">
+						show graph
+						</div>
+						
 						<div class="text-nowrap" style="text-align: center;">
 							${player.playername}
 							
 						</div>
 						
 					</a>
-<!-- 					<div class="text-center"> -->
-<!-- 					#{list items:player.categories, as:'cat'} -->
-<!-- 						#{if category.equals(cat.name)} -->
-<!-- 		           			<a href="@{Application.index(player.playernumber, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a> -->
-<!-- 		       			#{/if} -->
-<!-- 		       			#{else} -->
-<!-- 		       				<a href="@{Application.index(player.playernumber, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a> -->
-<!-- 		       			#{/else} -->
-<!-- 	       			#{/list} -->
-<!-- 				</div> -->
 				</h4>
-				
+			</div>
+			</div>
 	  </div>
-	  
-	  
+
 	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
 	 
 	 	<div class="btn-group btn-group-justified">
@@ -113,38 +203,7 @@
 </div><!-- end div player carousel -->
 
 
-<style>
 
-.questionbox {
-	border:1px solid #cecece; 
-	border-radius: 20px; 
-	margin:20px; 
-	box-shadow: 0px 0px 10px grey;
-}
-
-#mainquestion {
-  border: 1px solid #cecece;
-  display: -webkit-flex; /* Safari */
-  -webkit-justify-content: space-between; /* Safari 6.1+ */
-  display: flex;
-  justify-content: space-between;
-}
-
-#mainquestion div {
-   width: auto; 
-  height: auto;
-}
-
-.label {
-    display: inline-block;
-    max-width: 100px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    vertical-align: middle;
-}
-
-</style>
 
 <ul class="nav nav-tabs nav-justified">
 #{if questioncategories.size() > 0}
